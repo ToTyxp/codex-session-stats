@@ -1,0 +1,262 @@
+<!--
+    Aligned Fluent menu items for every app menu (DESIGN 2b, Context menu). Each row is
+    [icon 16 + 12] [label] [detail / gesture] [12 + 16: check or chevron]; the icon and trailing columns are reserved
+    per menu level (MenuChrome.IconColumn / TrailingColumn), so every label of a level starts at the same x and a check
+    never moves its text. Metrics, brushes and the submenu popup follow WPF's Fluent MenuItem.xaml
+    (Copyright (c) .NET Foundation and Contributors, MIT License).
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:menus="clr-namespace:AgentSpeed.Menus">
+
+    <!-- Keyboard focus ring on the rounded highlight. -->
+    <Style x:Key="AppMenuItemFocusVisual">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border Margin="4,1,4,1" CornerRadius="4" BorderThickness="2" SnapsToDevicePixels="True"
+                            BorderBrush="{DynamicResource KeyboardFocusBorderColorBrush}" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- SubmenuItem (and TopLevelItem): a command, a toggle or a single choice. -->
+    <ControlTemplate x:Key="AppMenuItemTemplate" TargetType="MenuItem">
+        <Border x:Name="Border" Margin="4,1,4,1" CornerRadius="4" SnapsToDevicePixels="True"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                menus:MenuChrome.HighContrast="{DynamicResource {x:Static SystemParameters.HighContrastKey}}">
+            <Grid Margin="8,6,8,6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid x:Name="IconBox" Width="16" Height="16" Margin="0,0,12,0" VerticalAlignment="Center">
+                    <ContentPresenter x:Name="Icon" ContentSource="Icon" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Grid>
+                <ContentPresenter Grid.Column="1" ContentSource="Header" RecognizesAccessKey="True" VerticalAlignment="Center"
+                                  Margin="{TemplateBinding Padding}" />
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom">
+                    <TextBlock x:Name="Detail" Margin="24,0,0,0" FontSize="12"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                               Text="{Binding Path=(menus:MenuChrome.Detail), RelativeSource={RelativeSource TemplatedParent}}" />
+                    <TextBlock x:Name="Gesture" Margin="24,0,0,0" FontSize="12"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                               Text="{TemplateBinding InputGestureText}" />
+                </StackPanel>
+                <Grid x:Name="TrailingBox" Grid.Column="3" Width="16" Margin="12,0,0,0" Visibility="Collapsed">
+                    <TextBlock x:Name="CheckGlyph" Text="&#xE73E;" FontSize="14" Visibility="Hidden"
+                               FontFamily="{DynamicResource AppSymbolFontFamily}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Grid>
+            </Grid>
+        </Border>
+        <ControlTemplate.Triggers>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="Icon" Value="{x:Null}" />
+                    <Condition Property="menus:MenuChrome.IconColumn" Value="False" />
+                </MultiTrigger.Conditions>
+                <Setter TargetName="IconBox" Property="Visibility" Value="Collapsed" />
+            </MultiTrigger>
+            <Trigger Property="menus:MenuChrome.TrailingColumn" Value="True">
+                <Setter TargetName="TrailingBox" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="IsCheckable" Value="True">
+                <Setter TargetName="TrailingBox" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter TargetName="TrailingBox" Property="Visibility" Value="Visible" />
+                <Setter TargetName="CheckGlyph" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="menus:MenuChrome.Detail" Value="{x:Null}">
+                <Setter TargetName="Detail" Property="Visibility" Value="Collapsed" />
+            </Trigger>
+            <Trigger Property="menus:MenuChrome.Detail" Value="">
+                <Setter TargetName="Detail" Property="Visibility" Value="Collapsed" />
+            </Trigger>
+            <Trigger Property="InputGestureText" Value="">
+                <Setter TargetName="Gesture" Property="Visibility" Value="Collapsed" />
+            </Trigger>
+            <Trigger Property="IsHighlighted" Value="True">
+                <Setter TargetName="Border" Property="Background" Value="{DynamicResource MenuBarItemBackgroundSelected}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                <Setter TargetName="Detail" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                <Setter TargetName="Gesture" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+            </Trigger>
+            <Trigger Property="menus:MenuChrome.IsHeader" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+            </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsHighlighted" Value="True" />
+                    <Condition SourceName="Border" Property="menus:MenuChrome.HighContrast" Value="True" />
+                </MultiTrigger.Conditions>
+                <Setter TargetName="Border" Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+                <Setter TargetName="Detail" Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+                <Setter TargetName="Gesture" Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+            </MultiTrigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!-- SubmenuHeader (and TopLevelHeader): the chevron sits in the trailing column; the submenu opens away from the
+         screen edge (Placement Right flips to the left by itself). -->
+    <ControlTemplate x:Key="AppMenuHeaderTemplate" TargetType="MenuItem">
+        <Grid x:Name="Root" SnapsToDevicePixels="True"
+              menus:MenuChrome.HighContrast="{DynamicResource {x:Static SystemParameters.HighContrastKey}}"
+              menus:MenuChrome.Animates="{DynamicResource {x:Static SystemParameters.ClientAreaAnimationKey}}">
+            <Border x:Name="Border" Margin="4,1,4,1" CornerRadius="4"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}">
+                <Grid x:Name="Row" Margin="8,6,8,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid x:Name="IconBox" Width="16" Height="16" Margin="0,0,12,0" VerticalAlignment="Center">
+                        <ContentPresenter x:Name="Icon" ContentSource="Icon" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Grid>
+                    <ContentPresenter Grid.Column="1" ContentSource="Header" RecognizesAccessKey="True" VerticalAlignment="Center"
+                                      Margin="{TemplateBinding Padding}" />
+                    <TextBlock x:Name="Detail" Grid.Column="2" Margin="24,0,0,0" FontSize="12" VerticalAlignment="Bottom"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                               Text="{Binding Path=(menus:MenuChrome.Detail), RelativeSource={RelativeSource TemplatedParent}}" />
+                    <Grid x:Name="TrailingBox" Grid.Column="3" Width="16" Margin="12,0,0,0">
+                        <TextBlock x:Name="Chevron" Text="&#xE76C;" FontSize="12"
+                                   FontFamily="{DynamicResource AppSymbolFontFamily}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Grid>
+                </Grid>
+            </Border>
+            <Popup x:Name="PART_Popup" Placement="Right" PlacementTarget="{Binding ElementName=Row}" VerticalOffset="-22"
+                   AllowsTransparency="True" Focusable="False" PopupAnimation="None"
+                   IsOpen="{TemplateBinding IsSubmenuOpen}">
+                <Grid x:Name="SubmenuRoot" Margin="12,10,12,18">
+                    <Grid.RenderTransform>
+                        <TranslateTransform />
+                    </Grid.RenderTransform>
+                    <!-- The shadow has its own layer so the menu text never renders through the effect. -->
+                    <Border x:Name="SubmenuShadow" CornerRadius="8" Background="{DynamicResource FlyoutBackground}">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="20" Direction="270" ShadowDepth="6" Opacity="0.5" Color="Black"
+                                              RenderingBias="Quality" />
+                        </Border.Effect>
+                    </Border>
+                    <Border x:Name="SubmenuBorder" MinWidth="140" CornerRadius="8" BorderThickness="1" Padding="0,3,0,3"
+                            SnapsToDevicePixels="True"
+                            Background="{DynamicResource FlyoutBackground}"
+                            BorderBrush="{DynamicResource FlyoutBorderBrush}"
+                            TextElement.Foreground="{DynamicResource ContextMenuForeground}">
+                        <ScrollViewer CanContentScroll="True" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                            <ItemsPresenter x:Name="ItemsPresenter"
+                                            KeyboardNavigation.DirectionalNavigation="Cycle"
+                                            KeyboardNavigation.TabNavigation="Cycle" />
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
+            </Popup>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="Icon" Value="{x:Null}" />
+                    <Condition Property="menus:MenuChrome.IconColumn" Value="False" />
+                </MultiTrigger.Conditions>
+                <Setter TargetName="IconBox" Property="Visibility" Value="Collapsed" />
+            </MultiTrigger>
+            <Trigger Property="menus:MenuChrome.Detail" Value="{x:Null}">
+                <Setter TargetName="Detail" Property="Visibility" Value="Collapsed" />
+            </Trigger>
+            <Trigger Property="menus:MenuChrome.Detail" Value="">
+                <Setter TargetName="Detail" Property="Visibility" Value="Collapsed" />
+            </Trigger>
+            <Trigger Property="IsHighlighted" Value="True">
+                <Setter TargetName="Border" Property="Background" Value="{DynamicResource MenuBarItemBackgroundSelected}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                <Setter TargetName="Detail" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+            </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsHighlighted" Value="True" />
+                    <Condition SourceName="Root" Property="menus:MenuChrome.HighContrast" Value="True" />
+                </MultiTrigger.Conditions>
+                <Setter TargetName="Border" Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+                <Setter TargetName="Detail" Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+            </MultiTrigger>
+            <Trigger SourceName="Root" Property="menus:MenuChrome.HighContrast" Value="True">
+                <Setter TargetName="SubmenuShadow" Property="Visibility" Value="Collapsed" />
+            </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsSubmenuOpen" Value="True" />
+                    <Condition SourceName="Root" Property="menus:MenuChrome.Animates" Value="True" />
+                </MultiTrigger.Conditions>
+                <MultiTrigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="SubmenuRoot" Storyboard.TargetProperty="Opacity"
+                                             From="0" To="1" Duration="0:0:0.167" />
+                            <DoubleAnimation Storyboard.TargetName="SubmenuRoot"
+                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                             From="-8" To="0" Duration="0:0:0.167">
+                                <DoubleAnimation.EasingFunction>
+                                    <CircleEase EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </MultiTrigger.EnterActions>
+            </MultiTrigger>
+            <Trigger Property="Role" Value="TopLevelHeader">
+                <Setter TargetName="TrailingBox" Property="Visibility" Value="Collapsed" />
+                <Setter TargetName="PART_Popup" Property="Placement" Value="Bottom" />
+                <Setter TargetName="PART_Popup" Property="HorizontalOffset" Value="-21" />
+                <Setter TargetName="PART_Popup" Property="VerticalOffset" Value="-1" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="AppMenuItemStyle" TargetType="MenuItem">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Foreground" Value="{DynamicResource ContextMenuForeground}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Focusable" Value="True" />
+        <Setter Property="KeyboardNavigation.IsTabStop" Value="True" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource AppMenuItemFocusVisual}" />
+        <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="Template" Value="{StaticResource AppMenuItemTemplate}" />
+        <Style.Triggers>
+            <Trigger Property="Role" Value="SubmenuHeader">
+                <Setter Property="Template" Value="{StaticResource AppMenuHeaderTemplate}" />
+            </Trigger>
+            <Trigger Property="Role" Value="TopLevelHeader">
+                <Setter Property="Template" Value="{StaticResource AppMenuHeaderTemplate}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Every other MenuItem of the app (for example the History table's context menu) gets the same rows. -->
+    <Style TargetType="MenuItem" BasedOn="{StaticResource AppMenuItemStyle}" />
+
+</ResourceDictionary>

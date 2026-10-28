@@ -1,0 +1,24 @@
+.DS_Store
+/dist/
+/build/
+/.build/
+/artifacts/
+/.claude/
+/request.md
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.env.*
+!.env.example
+node_modules/
+/macos/.build*/
+/work/
+/outputs/
+/codex/bin/
+/codex/runtime/
+
+# Partner documents for live reporting services, kept local and sent to partners directly
+/spec/REPORTING.md
+/spec/REPORTING.zh-Hans.md
+/spec/REPORTING-EXTENSIONS.md

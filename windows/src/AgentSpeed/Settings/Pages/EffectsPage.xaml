@@ -1,0 +1,36 @@
+<UserControl x:Class="AgentSpeed.Settings.Pages.EffectsPage"
+             x:ClassModifier="internal"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:AgentSpeed.Localization"
+             xmlns:controls="clr-namespace:AgentSpeed.Controls"
+             Focusable="False">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="Visible" />
+    </UserControl.Resources>
+    <StackPanel>
+        <controls:SettingsCard Header="{loc:Loc settings.effects.intensity}" Icon="&#xE945;">
+            <ComboBox MinWidth="200" SelectedIndex="{Binding EffectsIndex, Mode=TwoWay}" AutomationProperties.Name="{loc:Loc settings.effects.intensity}">
+                <ComboBoxItem Content="{loc:Loc effects.off}" />
+                <ComboBoxItem Content="{loc:Loc effects.soft}" />
+                <ComboBoxItem Content="{loc:Loc effects.standard}" />
+                <ComboBoxItem Content="{loc:Loc effects.max}" />
+            </ComboBox>
+        </controls:SettingsCard>
+        <Border Margin="0,0,0,4" Padding="16,10" CornerRadius="4" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
+                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                Visibility="{Binding ReduceMotion, Converter={StaticResource Visible}}">
+            <TextBlock Text="{loc:Loc settings.effects.reduceMotion}" Style="{StaticResource CaptionText}" />
+        </Border>
+        <controls:SettingsCard Header="{loc:Loc settings.effects.peaks}" Icon="&#xE734;">
+            <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding CelebratePeaks, Mode=TwoWay}" AutomationProperties.Name="{loc:Loc settings.effects.peaks}" />
+        </controls:SettingsCard>
+        <controls:SettingsCard Header="{loc:Loc settings.effects.pulses}" Icon="&#xE9D9;">
+            <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding ResponsePulses, Mode=TwoWay}" AutomationProperties.Name="{loc:Loc settings.effects.pulses}" />
+        </controls:SettingsCard>
+        <controls:SettingsCard Header="{loc:Loc settings.effects.preview}" Icon="&#xE768;" Description="{loc:Loc win.settings.preview.description}">
+            <Button Content="{Binding PreviewButtonText}" Command="{Binding PreviewCommand}" MinWidth="120" Style="{StaticResource AccentButtonStyle}"
+                    AutomationProperties.Name="{loc:Loc settings.effects.preview}" />
+        </controls:SettingsCard>
+    </StackPanel>
+</UserControl>

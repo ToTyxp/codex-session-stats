@@ -1,0 +1,289 @@
+<UserControl x:Class="AgentSpeed.Settings.TitleThemes.TitleThemesSection"
+             x:ClassModifier="internal"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:AgentSpeed.Localization"
+             xmlns:tt="clr-namespace:AgentSpeed.Settings.TitleThemes"
+             Focusable="False">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/AgentSpeed;component/Settings/TitleThemes/TitleThemesStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="Visible" />
+
+            <DataTemplate DataType="{x:Type tt:TitleThemeCardViewModel}">
+                <tt:TitleThemeCard Style="{StaticResource TitleCard}" IsCustom="{Binding IsCustom, Mode=OneTime}" IsChecked="{Binding IsSelected, Mode=OneWay}"
+                                   Command="{Binding DataContext.SelectCommand, RelativeSource={RelativeSource AncestorType=tt:TitleThemesSection}}"
+                                   CommandParameter="{Binding}" MoreText="{loc:Loc titles.custom.more.a11y}"
+                                   AutomationProperties.Name="{Binding AccessibleName}" Loaded="OnCardLoaded" ContextMenuOpening="OnCardContextMenuOpening">
+                    <tt:TitleThemeCard.ToolTip>
+                        <ToolTip>
+                            <TextBlock Text="{Binding Tooltip}" TextWrapping="Wrap" MaxWidth="360" />
+                        </ToolTip>
+                    </tt:TitleThemeCard.ToolTip>
+                </tt:TitleThemeCard>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type tt:NewTitleCardViewModel}">
+                <Button Style="{StaticResource TitleNewCard}" Content="{Binding Text}" IsEnabled="{Binding IsEnabled}" ToolTip="{Binding Tooltip}"
+                        Command="{Binding DataContext.NewCommand, RelativeSource={RelativeSource AncestorType=tt:TitleThemesSection}}"
+                        AutomationProperties.Name="{Binding Text}" AutomationProperties.HelpText="{Binding Tooltip}" />
+            </DataTemplate>
+
+            <!-- One row of the title table: level, threshold in its heat color, the field over its placeholder, reset. -->
+            <DataTemplate x:Key="TitleRow" DataType="{x:Type tt:TitleFieldRowViewModel}">
+                <Grid Height="30">
+                    <Rectangle Style="{StaticResource Hairline}" VerticalAlignment="Top" />
+                    <Border x:Name="Wash" CornerRadius="4" Margin="0,1,0,0" Background="{DynamicResource AccentFillColorDefaultBrush}" Opacity="0" />
+                    <Grid Margin="0,1,4,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="4" />
+                            <ColumnDefinition Width="26" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding LevelText}" FontSize="11" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                   Typography.NumeralAlignment="Tabular" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                        <TextBlock x:Name="Threshold" Grid.Column="1" Text="{Binding Threshold}" FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{Binding ThresholdBrush}" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                   Typography.NumeralAlignment="Tabular" TextTrimming="CharacterEllipsis" />
+                        <Grid Grid.Column="3" VerticalAlignment="Center">
+                            <TextBox x:Name="Field" Style="{StaticResource TitleFieldBox}" tt:TitleField.Row="{Binding}" MaxLength="256"
+                                     AutomationProperties.Name="{Binding AccessibleName}" />
+                            <TextBlock x:Name="Placeholder" Text="{Binding Placeholder}" IsHitTestVisible="False" Margin="12,0,10,0"
+                                       VerticalAlignment="Center" FontSize="13" TextTrimming="CharacterEllipsis" Visibility="Collapsed"
+                                       Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                        </Grid>
+                        <Button x:Name="Reset" Grid.Column="5" Style="{StaticResource TitleResetButton}" Tag="{Binding ElementName=Field}"
+                                Click="OnResetClick" PreviewMouseLeftButtonDown="OnResetMouseDown" ToolTip="{Binding ResetName}" AutomationProperties.Name="{Binding ResetName}"
+                                Opacity="0" IsEnabled="False">
+                            <TextBlock Style="{StaticResource SymbolIcon}" FontSize="12" Text="&#xE7A7;" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        </Button>
+                    </Grid>
+                </Grid>
+                <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding Text, ElementName=Field}" Value="">
+                        <Setter TargetName="Placeholder" Property="Visibility" Value="Visible" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding IsIdle}" Value="True">
+                        <Setter TargetName="Threshold" Property="FontWeight" Value="Normal" />
+                        <Setter TargetName="Threshold" Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding (tt:TitleField.HasText), ElementName=Field}" Value="True">
+                        <Setter TargetName="Reset" Property="IsEnabled" Value="True" />
+                        <DataTrigger.EnterActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="Reset" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2">
+                                        <DoubleAnimation.EasingFunction>
+                                            <CubicEase EasingMode="EaseOut" />
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.EnterActions>
+                        <DataTrigger.ExitActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="Reset" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2">
+                                        <DoubleAnimation.EasingFunction>
+                                            <CubicEase EasingMode="EaseOut" />
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.ExitActions>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding IsFocused}" Value="True">
+                        <DataTrigger.EnterActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="Wash" Storyboard.TargetProperty="Opacity" To="0.09" Duration="0:0:0.2">
+                                        <DoubleAnimation.EasingFunction>
+                                            <CubicEase EasingMode="EaseOut" />
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.EnterActions>
+                        <DataTrigger.ExitActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="Wash" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2">
+                                        <DoubleAnimation.EasingFunction>
+                                            <CubicEase EasingMode="EaseOut" />
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.ExitActions>
+                    </DataTrigger>
+                </DataTemplate.Triggers>
+            </DataTemplate>
+
+            <ItemsPanelTemplate x:Key="CardGrid">
+                <UniformGrid Columns="{Binding CardColumns, RelativeSource={RelativeSource AncestorType=tt:TitleThemesSection}}" />
+            </ItemsPanelTemplate>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel>
+        <!-- 1–2. Header and theme cards -->
+        <Border Style="{StaticResource TitleGroup}" Padding="16,14,16,16">
+            <StackPanel x:Name="GroupContent">
+                <DockPanel Margin="0,0,0,14">
+                    <TextBlock DockPanel.Dock="Left" Style="{StaticResource SymbolIcon}" FontSize="20" Text="&#xE8EC;" Margin="2,0,18,0"
+                               VerticalAlignment="Center" />
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="{loc:Loc titles.theme}" Style="{StaticResource BodyText}" AutomationProperties.HeadingLevel="Level2" />
+                        <TextBlock Text="{loc:Loc titles.theme.hint}" Style="{StaticResource CaptionText}" Margin="0,1,0,0" />
+                    </StackPanel>
+                </DockPanel>
+                <tt:TitleCardsGroup x:Name="Cards" Margin="0,0,-8,-8" AutomationProperties.Name="{loc:Loc titles.theme}"
+                                    KeyboardNavigation.DirectionalNavigation="None"
+                                    PreviewKeyDown="OnCardsKeyDown" GotKeyboardFocus="OnCardsGotFocus" LostKeyboardFocus="OnCardsLostFocus">
+                    <tt:PlainItemsControl x:Name="PresetItems" ItemsSource="{Binding PresetCards}" ItemsPanel="{StaticResource CardGrid}"
+                                          Focusable="False" />
+                    <TextBlock Text="{Binding CustomHeader}" FontSize="12" FontWeight="SemiBold" Margin="2,6,0,8"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" AutomationProperties.HeadingLevel="Level3" />
+                    <tt:PlainItemsControl x:Name="CustomItems" ItemsSource="{Binding CustomCards}" ItemsPanel="{StaticResource CardGrid}"
+                                          Focusable="False" />
+                </tt:TitleCardsGroup>
+            </StackPanel>
+        </Border>
+
+        <!-- 3. Undo banner (delete, reset all; 8 s) -->
+        <Border x:Name="Banner" Style="{StaticResource TitleGroup}" Margin="0,8,0,0" Padding="16,6,8,6"
+                Visibility="{Binding HasUndo, Converter={StaticResource Visible}}">
+            <DockPanel>
+                <Button DockPanel.Dock="Right" Style="{StaticResource LinkButton}" Content="{loc:Loc orbs.undo}" Command="{Binding UndoCommand}" Click="OnFocusReturnClick"
+                        FontWeight="SemiBold" VerticalAlignment="Center" />
+                <TextBlock DockPanel.Dock="Left" Style="{StaticResource SymbolIcon}" FontSize="14" Text="&#xE7A7;" Margin="0,0,12,0"
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <TextBlock x:Name="BannerText" Text="{Binding UndoText}" VerticalAlignment="Center" FontSize="13" TextWrapping="Wrap"
+                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" AutomationProperties.LiveSetting="Polite" />
+            </DockPanel>
+        </Border>
+
+        <!-- 4. Editor of the selected custom set -->
+        <tt:RevealDecorator x:Name="EditorReveal" Margin="0,8,0,0">
+            <Border Style="{StaticResource TitleGroup}" Padding="16,14,16,16" DataContext="{Binding Editor}">
+                <StackPanel>
+                    <TextBlock Text="{Binding Title}" FontSize="17" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Margin="0,0,0,14"
+                               FontFamily="{DynamicResource AppDisplayFontFamily}" AutomationProperties.HeadingLevel="Level2" />
+                    <Grid x:Name="EditorGrid">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition x:Name="FormColumn" Width="*" />
+                            <ColumnDefinition x:Name="GapColumn" Width="24" />
+                            <ColumnDefinition x:Name="PreviewColumnDefinition" Width="200" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Form -->
+                        <StackPanel x:Name="Form" Grid.Column="0" Grid.Row="0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" MinWidth="64" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="{loc:Loc titles.custom.name}" VerticalAlignment="Center" FontSize="13" Margin="0,0,12,0"
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                <TextBox x:Name="NameBox" Grid.Column="1" FontSize="13" MaxLength="64" AutomationProperties.Name="{loc:Loc titles.custom.name}"
+                                         PreviewKeyDown="OnNameKeyDown" LostKeyboardFocus="OnNameLostFocus" />
+                                <TextBlock Grid.Row="1" Text="{loc:Loc titles.custom.base}" VerticalAlignment="Center" FontSize="13" Margin="0,8,12,0"
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                <ComboBox Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" MinWidth="200" HorizontalAlignment="Left"
+                                          ItemsSource="{Binding BaseOptions}" DisplayMemberPath="Name" SelectedIndex="{Binding BaseIndex, Mode=TwoWay}"
+                                          AutomationProperties.Name="{loc:Loc titles.custom.base}" AutomationProperties.HelpText="{Binding BaseHint}" />
+                            </Grid>
+                            <TextBlock Text="{Binding BaseHint}" Style="{StaticResource CaptionText}" Margin="0,8,0,0" />
+                            <TextBlock Text="{loc:Loc titles.custom.vehicleArt}" Style="{StaticResource CaptionText}" Margin="0,2,0,0"
+                                       Visibility="{Binding ShowsVehicleArt, Converter={StaticResource Visible}}" />
+
+                            <!-- Title table -->
+                            <Grid Height="26" Margin="0,14,4,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="24" />
+                                    <ColumnDefinition Width="80" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="30" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding SpeedHeader}" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                           FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                <TextBlock Grid.Column="3" Text="{loc:Loc titles.custom.titleColumn}" Margin="10,0,0,0" VerticalAlignment="Center"
+                                           FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            </Grid>
+                            <ItemsControl x:Name="RowItems" ItemsSource="{Binding Rows}" ItemTemplate="{StaticResource TitleRow}" Focusable="False" />
+                            <Rectangle Style="{StaticResource Hairline}" />
+
+                            <Border Margin="0,12,0,0" Padding="12,8,12,8" CornerRadius="4" Background="{DynamicResource SystemFillColorCautionBackgroundBrush}"
+                                    Visibility="{Binding HasNotice, Converter={StaticResource Visible}}">
+                                <DockPanel>
+                                    <TextBlock DockPanel.Dock="Left" Style="{StaticResource SymbolIcon}" FontSize="14" Text="&#xE7BA;" Margin="0,0,10,0"
+                                               VerticalAlignment="Top" />
+                                    <TextBlock x:Name="NoticeText" Text="{Binding Notice}" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"
+                                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" AutomationProperties.LiveSetting="Polite" />
+                                </DockPanel>
+                            </Border>
+                            <TextBlock Text="{loc:Loc titles.custom.lengthHint}" Style="{StaticResource CaptionText}" Margin="0,10,0,0" />
+
+                            <DockPanel Margin="-4,10,0,0">
+                                <Button DockPanel.Dock="Right" Style="{StaticResource LinkButton}" Content="{loc:Loc titles.custom.delete}"
+                                        Command="{Binding DeleteCommand}" Click="OnFocusReturnClick" Foreground="{DynamicResource SystemFillColorCriticalBrush}" FontSize="13" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Style="{StaticResource LinkButton}" Content="{loc:Loc titles.custom.resetAll}" Command="{Binding ResetAllCommand}"
+                                            FontSize="13" Margin="0,0,12,0" />
+                                    <Button Style="{StaticResource LinkButton}" Content="{loc:Loc titles.custom.duplicate}" Command="{Binding DuplicateCommand}"
+                                            FontSize="13" ToolTip="{Binding DuplicateTooltip}" ToolTipService.ShowOnDisabled="True"
+                                            AutomationProperties.HelpText="{Binding DuplicateTooltip}" />
+                                </StackPanel>
+                            </DockPanel>
+                        </StackPanel>
+
+                        <!-- Live previews: a column that stays in view while the page scrolls, or a row above the form when narrow -->
+                        <StackPanel x:Name="PreviewColumn" Grid.Column="2" Grid.Row="0" VerticalAlignment="Top">
+                            <StackPanel.RenderTransform>
+                                <TranslateTransform x:Name="PreviewShift" />
+                            </StackPanel.RenderTransform>
+                            <TextBlock Text="{loc:Loc titles.custom.preview}" FontSize="12" FontWeight="SemiBold" Margin="2,0,0,8"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" AutomationProperties.HeadingLevel="Level3" />
+                            <UniformGrid x:Name="PreviewCards" Columns="1">
+                                <tt:TitlePreviewImage x:Name="HeroCard" Style="{StaticResource TitlePreviewCard}" Margin="0,0,0,8" AutomationProperties.Name="{Binding PreviewName}">
+                                    <StackPanel Margin="0,24,0,10">
+                                        <tt:TitleHeroPreview x:Name="HeroPreview" HorizontalAlignment="Center" Labels="{Binding PreviewLabels}"
+                                                             Level="{Binding PreviewLevel}" Redline="{Binding Redline}" Dark="{Binding DarkTheme}"
+                                                             ReduceMotion="{Binding ReduceMotion}" Unit="{Binding Unit}" PeakText="{Binding PeakText}"
+                                                             ShowsVehicle="{Binding PreviewShowsVehicle}" LanguageCode="{Binding LanguageCode}" />
+                                        <TextBlock Text="{loc:Loc win.titles.preview.dashboard}" Margin="8,20,8,0" HorizontalAlignment="Center" FontSize="12"
+                                                   TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                    </StackPanel>
+                                </tt:TitlePreviewImage>
+                                <tt:TitlePreviewImage x:Name="OrbCard" Style="{StaticResource TitlePreviewCard}" Margin="0,0,0,8" AutomationProperties.Name="{Binding PreviewName}">
+                                    <StackPanel Margin="0,24,0,10">
+                                        <tt:TitleOrbPreview x:Name="OrbPreview" HorizontalAlignment="Center" Labels="{Binding PreviewLabels}"
+                                                            Level="{Binding PreviewLevel}" Redline="{Binding Redline}" Dark="{Binding DarkTheme}"
+                                                            ReduceMotion="{Binding ReduceMotion}" Unit="{Binding Unit}" StyleKind="{Binding PreviewStyle}"
+                                                            Latin="{Binding Latin}" />
+                                        <TextBlock Text="{Binding PreviewOrbCaption}" Margin="8,20,8,0" HorizontalAlignment="Center" FontSize="12"
+                                                   TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                    </StackPanel>
+                                </tt:TitlePreviewImage>
+                            </UniformGrid>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </tt:RevealDecorator>
+    </StackPanel>
+</UserControl>

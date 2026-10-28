@@ -1,0 +1,81 @@
+<UserControl x:Class="AgentSpeed.Settings.Pages.GeneralPage"
+             x:ClassModifier="internal"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:AgentSpeed.Localization"
+             xmlns:controls="clr-namespace:AgentSpeed.Controls"
+             xmlns:tt="clr-namespace:AgentSpeed.Settings.TitleThemes"
+             Focusable="False">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="Visible" />
+    </UserControl.Resources>
+    <StackPanel>
+        <controls:SettingsCard Header="{loc:Loc settings.appearance}" Icon="&#xE790;" Description="{loc:Loc win.settings.appearance.description}">
+            <ComboBox MinWidth="200" SelectedIndex="{Binding AppearanceIndex, Mode=TwoWay}" AutomationProperties.Name="{loc:Loc settings.appearance}">
+                <ComboBoxItem Content="{loc:Loc appearance.auto}" />
+                <ComboBoxItem Content="{loc:Loc appearance.light}" />
+                <ComboBoxItem Content="{loc:Loc appearance.dark}" />
+            </ComboBox>
+        </controls:SettingsCard>
+        <controls:SettingsCard Header="{loc:Loc settings.language}" Icon="&#xE774;" Description="{loc:Loc win.settings.language.description}">
+            <ComboBox MinWidth="200" SelectedIndex="{Binding LanguageIndex, Mode=TwoWay}" AutomationProperties.Name="{loc:Loc settings.language}">
+                <ComboBoxItem Content="{loc:Loc settings.language.system}" />
+                <ComboBoxItem Content="{loc:Loc language.zhHant}" />
+                <ComboBoxItem Content="{loc:Loc language.zhHans}" />
+                <ComboBoxItem Content="{loc:Loc language.en}" />
+                <ComboBoxItem Content="{loc:Loc language.ja}" />
+            </ComboBox>
+        </controls:SettingsCard>
+        <controls:SettingsCard Header="{loc:Loc settings.launchAtLogin}" Icon="&#xE7E8;" Description="{loc:Loc win.settings.launchAtLogin.description}">
+            <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding LaunchAtLogin, Mode=TwoWay}" AutomationProperties.Name="{loc:Loc settings.launchAtLogin}" />
+        </controls:SettingsCard>
+        <controls:SettingsCard Header="{loc:Loc settings.metric}" Icon="&#xEC4A;" Description="{loc:Loc win.settings.metric.description}">
+            <ComboBox MinWidth="200" SelectedIndex="{Binding MetricIndex, Mode=TwoWay}" AutomationProperties.Name="{loc:Loc settings.metric}">
+                <ComboBoxItem Content="{loc:Loc metric.output}" />
+                <ComboBoxItem Content="{loc:Loc metric.total}" />
+            </ComboBox>
+        </controls:SettingsCard>
+        <controls:SettingsCard Header="{loc:Loc settings.redline}" Icon="&#xE945;" ContentBelow="True">
+            <!-- Slider, then the heat strip with one tick per speed title, then the hint and every title with its threshold
+                 (DESIGN 5). Strip and list share the slider's column, so they line up with its track at any width. -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Slider Grid.Column="0" VerticalAlignment="Center" MaxWidth="520" HorizontalAlignment="Stretch"
+                        Minimum="50" Maximum="2000" SmallChange="50" LargeChange="200" TickFrequency="50" IsSnapToTickEnabled="True"
+                        Value="{Binding RedlineOutputValue, Mode=TwoWay}" AutomationProperties.Name="{loc:Loc settings.redline}"
+                        AutomationProperties.HelpText="{Binding RedlineText}"
+                        Visibility="{Binding IsOutputMetric, Converter={StaticResource Visible}}" />
+                <Slider Grid.Column="0" VerticalAlignment="Center" MaxWidth="520" HorizontalAlignment="Stretch"
+                        Minimum="4.30103" Maximum="6.30103" SmallChange="0.025" LargeChange="0.1" TickFrequency="0.025" IsSnapToTickEnabled="True"
+                        Value="{Binding RedlineTotalLog, Mode=TwoWay}" AutomationProperties.Name="{loc:Loc settings.redline}"
+                        AutomationProperties.HelpText="{Binding RedlineText}"
+                        Visibility="{Binding IsTotalMetric, Converter={StaticResource Visible}}" />
+                <TextBlock Grid.Column="1" Text="{Binding RedlineText}" MinWidth="96" TextAlignment="Right" VerticalAlignment="Center"
+                           Margin="16,0,0,0" Typography.NumeralAlignment="Tabular" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+
+                <controls:HeatStrip x:Name="TitleStrip" Grid.Row="1" Grid.Column="0" MaxWidth="500" HorizontalAlignment="Stretch"
+                                    Margin="10,4,10,0" Ticks="{Binding TitleTicks}" TickBrush="{DynamicResource TextFillColorTertiaryBrush}"
+                                    HighlightBrush="{DynamicResource TextFillColorPrimaryBrush}"
+                                    HighlightIndex="{Binding HighlightIndex, ElementName=GeneralLadder}" />
+
+                <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="0,10,0,0">
+                    <TextBlock Text="{Binding RedlineHint}" Style="{StaticResource CaptionText}" />
+                    <!-- Every title of the General theme with its threshold (DESIGN 5). -->
+                    <tt:TitleLadderList x:Name="GeneralLadder" Rows="{Binding TitleLadder}" Margin="0,12,0,0" />
+                </StackPanel>
+            </Grid>
+        </controls:SettingsCard>
+
+        <!-- Title themes: the picker, the undo banner and the custom set editor (DESIGN 5). -->
+        <tt:TitleThemesSection Margin="0,20,0,0" DataContext="{Binding TitleThemes}"
+                               Visibility="{Binding DataContext.HasTitleThemes, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource Visible}}" />
+    </StackPanel>
+</UserControl>

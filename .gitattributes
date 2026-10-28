@@ -1,0 +1,2 @@
+# Fixtures must stay byte-exact on every platform.
+spec/fixtures/** -text

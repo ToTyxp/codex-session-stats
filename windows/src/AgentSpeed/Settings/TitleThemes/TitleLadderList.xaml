@@ -1,0 +1,64 @@
+<UserControl x:Class="AgentSpeed.Settings.TitleThemes.TitleLadderList"
+             x:ClassModifier="internal"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:AgentSpeed.Localization"
+             xmlns:controls="clr-namespace:AgentSpeed.Controls"
+             xmlns:settings="clr-namespace:AgentSpeed.Settings"
+             Focusable="False">
+    <UserControl.Resources>
+        <!-- One entry of the aligned speed-title grid: the title (secondary), then its threshold right-aligned in the heat
+             color. The value reserves the widest form it takes over the slider range (hidden copies), so dragging the
+             redline changes the numbers but never the layout. -->
+        <DataTemplate x:Key="TitleLadderItem" DataType="{x:Type settings:TitleLadderRow}">
+            <Border x:Name="Chip" Background="Transparent" CornerRadius="4" Padding="4,1,4,1"
+                    Focusable="True" FocusVisualStyle="{StaticResource RoundedFocusVisual}" AutomationProperties.Name="{Binding AccessibleName}"
+                    MouseEnter="OnItemEnter" MouseLeave="OnItemLeave" GotKeyboardFocus="OnItemEnter" LostKeyboardFocus="OnItemLeave">
+                <DockPanel>
+                    <Grid DockPanel.Dock="Right" Margin="8,0,0,0">
+                        <ItemsControl ItemsSource="{Binding ValueShapes}" Focusable="False" IsHitTestVisible="False" IsTabStop="False">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Grid />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" FontSize="12" FontWeight="SemiBold" Typography.NumeralAlignment="Tabular"
+                                               Visibility="Hidden" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Text="{Binding Value}" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Right"
+                                   Foreground="{Binding ValueBrush}" Typography.NumeralAlignment="Tabular" />
+                    </Grid>
+                    <TextBlock x:Name="Name" Text="{Binding Name}" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                </DockPanel>
+            </Border>
+            <DataTemplate.Triggers>
+                <Trigger SourceName="Chip" Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Name" Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+                    <Setter TargetName="Chip" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                </Trigger>
+                <Trigger SourceName="Chip" Property="IsKeyboardFocused" Value="True">
+                    <Setter TargetName="Name" Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+                    <Setter TargetName="Chip" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                </Trigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </UserControl.Resources>
+    <StackPanel>
+        <TextBlock x:Name="Heading" Text="{loc:Loc title.ladder}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"
+                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" AutomationProperties.HeadingLevel="Level2" />
+        <!-- Aligned 4 × 3 grid (3 or 2 columns when narrow); the entries' 4 DIP padding sits in the outer margin. -->
+        <ItemsControl x:Name="Items" ItemTemplate="{StaticResource TitleLadderItem}" Margin="-4,0,0,0"
+                      HorizontalAlignment="Left" Focusable="False" KeyboardNavigation.TabNavigation="Once"
+                      KeyboardNavigation.DirectionalNavigation="Contained" AutomationProperties.Name="{loc:Loc title.ladder}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <controls:AlignedGridPanel HorizontalSpacing="12" VerticalSpacing="2" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+    </StackPanel>
+</UserControl>

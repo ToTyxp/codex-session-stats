@@ -1,0 +1,632 @@
+<Window x:Class="AgentSpeed.Dashboard.DashboardWindow"
+        x:ClassModifier="internal"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:AgentSpeed.Localization"
+        xmlns:controls="clr-namespace:AgentSpeed.Controls"
+        xmlns:dash="clr-namespace:AgentSpeed.Dashboard"
+        Title="{loc:Loc app.name}"
+        Width="368"
+        WindowStyle="SingleBorderWindow"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        ShowActivated="True"
+        Topmost="True"
+        UseLayoutRounding="True"
+        FontFamily="{DynamicResource AppFontFamily}"
+        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+        AutomationProperties.Name="{loc:Loc app.name}">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="0" GlassFrameThickness="-1" UseAeroCaptionButtons="False" CornerRadius="0" />
+    </WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="Visible" />
+        <controls:InverseBoolToVisibilityConverter x:Key="Hidden" />
+        <controls:DimOpacityConverter x:Key="Dim" />
+        <controls:TextToVisibilityConverter x:Key="HasText" />
+
+        <!-- The hero's unit toggles tok/s and money (DESIGN 9): 55 % at rest, 85 % with a 0.5 DIP underline on hover. -->
+        <Style x:Key="HeroUnitButton" TargetType="Button">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Focusable" Value="True" />
+            <Setter Property="FocusVisualStyle" Value="{DynamicResource {x:Static SystemParameters.FocusVisualStyleKey}}" />
+            <Setter Property="ToolTipService.InitialShowDelay" Value="800" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid Background="Transparent" MinHeight="20">
+                            <StackPanel x:Name="Label" Opacity="0.55" VerticalAlignment="Bottom">
+                                <TextBlock Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" FontSize="14"
+                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                                <Rectangle x:Name="Underline" Height="0.5" Margin="0,1,0,0" Opacity="0"
+                                           Fill="{DynamicResource TextFillColorPrimaryBrush}" />
+                            </StackPanel>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="Label" Storyboard.TargetProperty="Opacity" To="0.85" Duration="0:0:0.15" />
+                                            <DoubleAnimation Storyboard.TargetName="Underline" Storyboard.TargetProperty="Opacity" To="0.47" Duration="0:0:0.15" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="Label" Storyboard.TargetProperty="Opacity" To="0.55" Duration="0:0:0.15" />
+                                            <DoubleAnimation Storyboard.TargetName="Underline" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Label" Property="Opacity" Value="0.85" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="MetricValue" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontFamily" Value="{DynamicResource AppDisplayFontFamily}" />
+            <Setter Property="Typography.NumeralAlignment" Value="Tabular" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        </Style>
+
+        <!-- Source row: a full-width button whose hover plate bleeds 8 DIP into the padding, so the row's content stays
+             aligned with the sections around it. Hover and focus only change opacity and render transforms. -->
+        <Style x:Key="SourceRowButton" TargetType="dash:SourceRowButton">
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="8,0,8,0" />
+            <Setter Property="Margin" Value="-8,0,-8,0" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="dash:SourceRowButton">
+                        <Grid Background="Transparent" SnapsToDevicePixels="True">
+                            <Border x:Name="PART_Plate" CornerRadius="5" Opacity="0"
+                                    Background="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                            <Border x:Name="Pressed" CornerRadius="5" Visibility="Collapsed"
+                                    Background="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                            <Border x:Name="Focus" CornerRadius="5" BorderThickness="2" Visibility="Collapsed"
+                                    BorderBrush="{DynamicResource KeyboardFocusBorderColorBrush}" />
+                            <Grid Margin="{TemplateBinding Padding}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <ContentPresenter VerticalAlignment="Center" RecognizesAccessKey="False" />
+                                <ContentPresenter x:Name="PART_Trailing" Grid.Column="1" VerticalAlignment="Center"
+                                                  Content="{TemplateBinding Trailing}" />
+                                <TextBlock x:Name="PART_Chevron" Grid.Column="1" Text="&#xE76C;" FontSize="10" Opacity="0"
+                                           HorizontalAlignment="Right" VerticalAlignment="Center" IsHitTestVisible="False"
+                                           FontFamily="{DynamicResource AppSymbolFontFamily}"
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            </Grid>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Pressed" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Focus" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Small secondary text button in a section header; its negative margins keep the header line's height. -->
+        <Style x:Key="HeaderTextButton" TargetType="Button" BasedOn="{StaticResource DisclosureButton}">
+            <Setter Property="Height" Value="24" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Margin" Value="0,-4,-6,-4" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </Window.Resources>
+
+    <Border x:Name="Root" Background="Transparent" RenderTransformOrigin="0.5,1">
+        <Border.RenderTransform>
+            <TranslateTransform x:Name="Slide" />
+        </Border.RenderTransform>
+        <!-- The window height is set from code (no SizeToContent), anchored to the taskbar edge; see DashboardWindow.Place. -->
+        <ScrollViewer x:Name="Scroller" Style="{StaticResource OverlayScrollViewer}">
+            <StackPanel x:Name="Sections" Margin="20,20,20,12">
+
+                <!-- The one-time live reporting invitation (DESIGN 11), above the hero -->
+                <dash:ReportInvitationCard x:Name="Invitation" Visibility="Collapsed" />
+
+                <!-- Hero -->
+                <Grid Height="112">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="112" />
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid x:Name="HeroHost" Grid.Column="0" Width="112" Height="112" ClipToBounds="False"
+                          AutomationProperties.Name="{Binding HeroAccessibleName}" />
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                        <StackPanel x:Name="HeroValue" Orientation="Horizontal">
+                            <StackPanel.RenderTransform>
+                                <TranslateTransform x:Name="HeroValueSlide" />
+                            </StackPanel.RenderTransform>
+                            <!-- A partly priced money value: a small ≥ (60 %, secondary), part of the value's width (DESIGN 9). -->
+                            <TextBlock Text="≥" FontSize="26.4" FontWeight="Bold" Margin="0,0,1,5" VerticalAlignment="Bottom"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                       Visibility="{Binding HeroAtLeast, Converter={StaticResource Visible}}" />
+                            <TextBlock Text="{Binding ValueText}" FontSize="44" FontWeight="Bold" LineHeight="48" LineStackingStrategy="BlockLineHeight"
+                                       FontFamily="{DynamicResource AppDisplayFontFamily}" Typography.NumeralAlignment="Tabular"
+                                       AutomationProperties.Name="{Binding HeroAccessibleName}">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HeroMuted}" Value="True">
+                                                <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <Button x:Name="HeroUnit" Style="{StaticResource HeroUnitButton}" Content="{Binding UnitText}" Margin="6,0,0,7"
+                                    VerticalAlignment="Bottom" Click="OnHeroUnit" ToolTip="{loc:Loc orbs.unit.toggleHint}"
+                                    AutomationProperties.Name="{loc:Loc a11y.orb.toggleUnit}"
+                                    AutomationProperties.HelpText="{Binding UnitText}" />
+                        </StackPanel>
+                        <dash:TitleSwapLabel Text="{Binding TitleText}" Level="{Binding TitleLevelIndex}" Foreground="{Binding TitleBrush}"
+                                              Slides="{Binding TitleSlides}" Margin="1,2,0,0" />
+                        <TextBlock Text="{Binding ContextText}" Style="{StaticResource CaptionText}" Margin="1,3,0,0" />
+                        <Border x:Name="PreviewBadge" Visibility="Collapsed" HorizontalAlignment="Left" Margin="0,6,0,0" Padding="8,2"
+                                CornerRadius="10" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                            <TextBlock Text="{loc:Loc settings.effects.previewing}" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        </Border>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Loading / no sources -->
+                <StackPanel Margin="0,16,0,0" Visibility="{Binding IsLoading, Converter={StaticResource Visible}}">
+                    <Rectangle Style="{StaticResource Hairline}" Margin="0,0,0,16" />
+                    <TextBlock Text="{loc:Loc state.loading}" Style="{StaticResource CaptionText}" />
+                    <ProgressBar Margin="0,8,0,0" Height="4" Minimum="0" Maximum="1" Value="{Binding LoadingProgress, Mode=OneWay}"
+                                 AutomationProperties.Name="{loc:Loc state.loading}" />
+                </StackPanel>
+
+                <StackPanel Margin="0,16,0,0" Visibility="{Binding IsNoSources, Converter={StaticResource Visible}}">
+                    <Rectangle Style="{StaticResource Hairline}" Margin="0,0,0,16" />
+                    <TextBlock Text="{loc:Loc state.noSources}" Style="{StaticResource BodyText}" />
+                    <Button Content="{loc:Loc menu.settings}" Margin="0,10,0,0" HorizontalAlignment="Left" Click="OnOpenSources" />
+                </StackPanel>
+
+                <!-- Live chart -->
+                <StackPanel Visibility="{Binding IsRunning, Converter={StaticResource Visible}}">
+                    <Rectangle Style="{StaticResource Hairline}" Margin="0,16,0,12" />
+                    <Grid Margin="0,0,0,8">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="{loc:Loc dashboard.live}" Style="{StaticResource BodyStrongText}" />
+                            <StackPanel Orientation="Horizontal" Margin="10,0,0,0" VerticalAlignment="Center"
+                                        Visibility="{Binding HasEstimate, Converter={StaticResource Visible}}">
+                                <Line X1="0" Y1="0" X2="14" Y2="0" Stroke="{DynamicResource TextFillColorSecondaryBrush}" StrokeThickness="1.5"
+                                      StrokeDashArray="1.5 1.5" VerticalAlignment="Center" Opacity="0.8" />
+                                <TextBlock Text="{loc:Loc chart.estimated}" Margin="5,0,0,0" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            </StackPanel>
+                        </StackPanel>
+                        <Border Style="{StaticResource SegmentedContainer}" HorizontalAlignment="Right"
+                                AutomationProperties.Name="{loc:Loc win.dashboard.range}">
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton x:Name="Range60" Style="{StaticResource SegmentedItem}" GroupName="DashboardRange"
+                                             Content="{loc:Loc win.dashboard.range.1m}" Checked="OnRangeChecked" Tag="60" />
+                                <RadioButton x:Name="Range120" Style="{StaticResource SegmentedItem}" GroupName="DashboardRange"
+                                             Content="{loc:Loc win.dashboard.range.2m}" Checked="OnRangeChecked" Tag="120" />
+                                <RadioButton x:Name="Range300" Style="{StaticResource SegmentedItem}" GroupName="DashboardRange"
+                                             Content="{loc:Loc win.dashboard.range.5m}" Checked="OnRangeChecked" Tag="300" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                    <dash:LiveChart x:Name="Chart" Height="96" Margin="0,4,0,0"
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    GridBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+                                    BubbleBrush="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
+                                    AutomationProperties.Name="{loc:Loc win.dashboard.chart}" />
+
+                    <!-- Sources -->
+                    <Rectangle Style="{StaticResource Hairline}" Margin="0,16,0,12" />
+                    <TextBlock Text="{loc:Loc dashboard.sources}" Style="{StaticResource BodyStrongText}" Margin="0,0,0,6" />
+                    <ItemsControl ItemsSource="{Binding Sources}" Focusable="False">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type dash:SourceRow}">
+                                <!-- Exactly 30 DIP in every state; the settings link is a sibling over the trailing edge, never
+                                     a button nested inside the row button. -->
+                                <Grid Height="30" Visibility="{Binding IsListed, Converter={StaticResource Visible}}">
+                                    <dash:SourceRowButton Style="{StaticResource SourceRowButton}" Click="OnSourceRow"
+                                                          ShowChevron="{Binding ShowChevron}"
+                                                          ReduceMotion="{Binding DataContext.ReduceMotion, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                          AutomationProperties.Name="{Binding AccessibleName}"
+                                                          AutomationProperties.HelpText="{loc:Loc win.dashboard.sourceHint}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="18" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Ellipse Width="8" Height="8" Fill="{Binding DotBrush}" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                     Opacity="{Binding IsDimmed, Converter={StaticResource Dim}}" />
+                                            <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="13" VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis" Opacity="{Binding IsDimmed, Converter={StaticResource Dim}}" />
+                                        </Grid>
+                                        <dash:SourceRowButton.Trailing>
+                                            <Grid Visibility="{Binding IsDimmed, Converter={StaticResource Hidden}}">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="86" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding TodayText}" FontSize="12" VerticalAlignment="Center" Margin="8,0,0,0"
+                                                           Typography.NumeralAlignment="Tabular" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                                <dash:LiveValue Grid.Column="1" Text="{Binding LiveText}" Kind="{Binding LiveKind}"
+                                                                TextElement.FontSize="13" TextElement.FontWeight="SemiBold"
+                                                                HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                                AutomationProperties.Name="{Binding LiveAccessibleName}"
+                                                                ReduceMotion="{Binding DataContext.ReduceMotion, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                            </Grid>
+                                        </dash:SourceRowButton.Trailing>
+                                    </dash:SourceRowButton>
+                                    <Button Style="{StaticResource LinkButton}" HorizontalAlignment="Right" Margin="0,0,-4,0"
+                                            Content="{Binding Status}" FontSize="12" Click="OnOpenSources"
+                                            Visibility="{Binding ShowSettingsLink, Converter={StaticResource Visible}}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Text="{loc:Loc dashboard.sources.empty}" Style="{StaticResource CaptionText}" Margin="0,4,0,4"
+                               TextWrapping="Wrap" Visibility="{Binding HasListedSources, Converter={StaticResource Hidden}}" />
+
+                    <!-- Agents -->
+                    <Rectangle Style="{StaticResource Hairline}" Margin="0,12,0,12" />
+                    <TextBlock Text="{loc:Loc dashboard.agents}" Style="{StaticResource BodyStrongText}" Margin="0,0,0,6" />
+                    <StackPanel Orientation="Horizontal" Margin="0,4,0,4" Visibility="{Binding HasAgents, Converter={StaticResource Hidden}}">
+                        <controls:GaugeGlyph Width="18" Height="18" TextElement.Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        <TextBlock Text="{loc:Loc agents.empty}" Style="{StaticResource CaptionText}" Margin="8,0,0,0" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <!-- One viewport in every state: beyond 12 rows the expanded list scrolls inside it, and its height springs
+                         between modes. It reaches 20 DIP into the right padding, where its scroll bar has a gutter of its own. -->
+                    <ScrollViewer x:Name="AgentsViewport" Style="{StaticResource GutterScrollViewer}" Margin="0,0,-20,0"
+                                  VerticalScrollBarVisibility="Hidden" PanningMode="VerticalOnly" PreviewMouseWheel="OnAgentsWheel">
+                        <ItemsControl x:Name="AgentsItems" ItemsSource="{Binding Agents}" Focusable="False" VerticalAlignment="Top">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type dash:AgentRow}">
+                                    <!-- Rows stack without gaps so each row's connector piece joins its neighbors. -->
+                                    <Grid Height="{x:Static dash:DashboardViewModel.AgentRowHeight}" AutomationProperties.Name="{Binding AccessibleName}"
+                                          Background="Transparent" ToolTip="{Binding TrafficTooltip}">
+                                        <dash:TreeConnectors Guides="{Binding Guides}" Stroke="{DynamicResource DividerStrokeColorDefaultBrush}" />
+                                        <Grid Margin="{Binding Indent}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="30" />
+                                                <ColumnDefinition Width="56" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel VerticalAlignment="Center" Margin="0,3,8,3">
+                                                <TextBlock Text="{Binding Project}" FontSize="13" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="{Binding Detail}" FontSize="12" TextTrimming="CharacterEllipsis"
+                                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                            </StackPanel>
+                                            <dash:PhaseBadge Grid.Column="1" Phase="{Binding Phase}" Color="{Binding Color}"
+                                                             ReduceMotion="{Binding DataContext.ReduceMotion, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                            <!-- Below 0.05 tok/s the slot shows a dash or, while tools run, an hourglass (DESIGN 4.4). -->
+                                            <dash:LiveValue Grid.Column="2" Text="{Binding LiveText}" Kind="{Binding LiveKind}"
+                                                            TextElement.FontSize="13" TextElement.FontWeight="SemiBold"
+                                                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                            AutomationProperties.Name="{Binding LiveAccessibleName}"
+                                                            ReduceMotion="{Binding DataContext.ReduceMotion, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                        </Grid>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                    <Button x:Name="AgentsToggle" Style="{StaticResource DisclosureButton}" Margin="-6,4,0,0" Click="OnAgentsToggle"
+                            Visibility="{Binding CanToggleAgents, Converter={StaticResource Visible}}"
+                            AutomationProperties.Name="{Binding AgentsToggleAccessibleName}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding AgentsToggleText}" VerticalAlignment="Center" Typography.NumeralAlignment="Tabular" />
+                            <TextBlock Style="{StaticResource SymbolIcon}" Text="&#xE70D;" FontSize="9" Margin="6,1,0,0" VerticalAlignment="Center"
+                                       RenderTransformOrigin="0.5,0.5">
+                                <TextBlock.RenderTransform>
+                                    <RotateTransform x:Name="AgentsChevron" />
+                                </TextBlock.RenderTransform>
+                            </TextBlock>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Today -->
+                    <Rectangle Style="{StaticResource Hairline}" Margin="0,12,0,12" />
+                    <Grid Margin="0,0,0,8">
+                        <TextBlock Text="{loc:Loc dashboard.today}" Style="{StaticResource BodyStrongText}" />
+                        <Button Style="{StaticResource HeaderTextButton}" Click="OnHistory"
+                                ToolTip="{loc:Loc win.dashboard.historyHint}"
+                                AutomationProperties.Name="{loc:Loc win.dashboard.history}"
+                                AutomationProperties.HelpText="{loc:Loc win.dashboard.historyHint}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE81C;" FontSize="12" VerticalAlignment="Center" Margin="0,1,5,0"
+                                           FontFamily="{DynamicResource AppSymbolFontFamily}" />
+                                <TextBlock Text="{loc:Loc win.dashboard.history}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="12" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0" Grid.Column="0">
+                            <TextBlock Text="{loc:Loc today.output}" Style="{StaticResource CaptionText}" />
+                            <TextBlock Text="{Binding OutputText}" Style="{StaticResource MetricValue}" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="2">
+                            <TextBlock Text="{loc:Loc today.input}" Style="{StaticResource CaptionText}" />
+                            <TextBlock Text="{Binding InputText}" Style="{StaticResource MetricValue}" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="2" Grid.Column="0">
+                            <TextBlock Text="{loc:Loc today.requests}" Style="{StaticResource CaptionText}" />
+                            <TextBlock Text="{Binding RequestsText}" Style="{StaticResource MetricValue}" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="2" Grid.Column="2">
+                            <TextBlock Text="{loc:Loc today.average}" Style="{StaticResource CaptionText}" />
+                            <TextBlock Text="{Binding AverageText}" Style="{StaticResource MetricValue}" />
+                        </StackPanel>
+                    </Grid>
+                    <Border Margin="0,12,0,0" Padding="12,8" CornerRadius="6" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                        <Grid>
+                            <TextBlock Text="{loc:Loc today.peak}" Style="{StaticResource CaptionText}" VerticalAlignment="Center" />
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <TextBlock Text="{Binding PeakText}" FontSize="13" FontWeight="SemiBold" Typography.NumeralAlignment="Tabular" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding PeakTimeText}" FontSize="12" Margin="8,0,0,0" VerticalAlignment="Center"
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Today's cost (DESIGN 9): styled like the peak row, the amount trailing, ⓘ for the breakdown. -->
+                    <Border Margin="0,8,0,0" Padding="12,8" CornerRadius="6" Background="{DynamicResource SubtleFillColorSecondaryBrush}"
+                            AutomationProperties.Name="{Binding TodayCostAccessibleName}">
+                        <Grid>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="{loc:Loc today.cost}" Style="{StaticResource CaptionText}" VerticalAlignment="Center" />
+                                <TextBlock Text="{loc:Loc cost.apiEquivalent}" FontSize="10" Margin="6,0,0,0" VerticalAlignment="Center"
+                                           Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <TextBlock x:Name="TodayCostValue" Text="{Binding TodayCostText}" FontSize="13" FontWeight="SemiBold"
+                                           Typography.NumeralAlignment="Tabular" VerticalAlignment="Center" />
+                                <Button x:Name="CostInfoButton" Style="{StaticResource SubtleButton}" Click="OnCostInfo" Margin="4,-6,-8,-6"
+                                        ToolTip="{loc:Loc cost.apiEquivalent.hint}" AutomationProperties.Name="{loc:Loc cost.apiEquivalent}">
+                                    <TextBlock Style="{StaticResource SymbolIcon}" Text="&#xE946;" FontSize="12"
+                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <Popup x:Name="CostPopup" PlacementTarget="{Binding ElementName=CostInfoButton}" Placement="Top" StaysOpen="False"
+                           AllowsTransparency="True" PopupAnimation="Fade" HorizontalOffset="-252" VerticalOffset="-6">
+                        <Border Width="280" Margin="12" Padding="14,12" CornerRadius="8" BorderThickness="1"
+                                Background="{DynamicResource ToolTipBackgroundBrush}" BorderBrush="{DynamicResource ToolTipBorderBrush}"
+                                TextElement.Foreground="{DynamicResource ToolTipForegroundBrush}">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="18" ShadowDepth="3" Direction="270" Opacity="0.22" />
+                            </Border.Effect>
+                            <StackPanel>
+                                <TextBlock Text="{loc:Loc today.cost}" FontSize="13" FontWeight="SemiBold" />
+                                <TextBlock Text="{loc:Loc cost.apiEquivalent.hint}" FontSize="11" LineHeight="16" TextWrapping="Wrap" Margin="0,4,0,0"
+                                           Opacity="0.72" />
+                                <ItemsControl ItemsSource="{Binding TodayCostRows}" Focusable="False" Margin="0,8,0,0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type dash:TodayCostRow}">
+                                            <Grid Margin="0,0,0,8" AutomationProperties.Name="{Binding AccessibleName}">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="14" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="5" />
+                                                </Grid.RowDefinitions>
+                                                <Ellipse Width="7" Height="7" Fill="{Binding DotBrush}" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                                <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="12" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Grid.Column="2" Text="{Binding AmountText}" FontSize="12" FontWeight="Medium" Margin="8,0,0,0"
+                                                           Typography.NumeralAlignment="Tabular" />
+                                                <Rectangle Grid.Row="1" Grid.ColumnSpan="3" Height="2" RadiusX="1" RadiusY="1" VerticalAlignment="Bottom"
+                                                           Fill="{Binding DotBrush}" Opacity="0.55" RenderTransformOrigin="0,0.5">
+                                                    <Rectangle.RenderTransform>
+                                                        <ScaleTransform ScaleX="{Binding Share}" />
+                                                    </Rectangle.RenderTransform>
+                                                </Rectangle>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock Text="{Binding TodayCostUnpriced}" FontSize="11" TextWrapping="Wrap" Margin="0,2,0,0" Opacity="0.8"
+                                           Visibility="{Binding TodayCostUnpriced, Converter={StaticResource HasText}}" />
+                                <TextBlock Text="{Binding TodayCostExcluded}" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0" Opacity="0.8"
+                                           Visibility="{Binding TodayCostExcluded, Converter={StaticResource HasText}}" />
+                                <TextBlock Text="{Binding TodayCostRateLine}" FontSize="11" Margin="0,8,0,0" Opacity="0.72"
+                                           Typography.NumeralAlignment="Tabular" TextTrimming="CharacterEllipsis"
+                                           Visibility="{Binding TodayCostRateLine, Converter={StaticResource HasText}}" />
+                            </StackPanel>
+                        </Border>
+                    </Popup>
+                </StackPanel>
+
+                    <!-- Network (DESIGN 10): this computer's live rates, its last minute, and the sources with traffic today. -->
+                    <StackPanel Visibility="{Binding TrafficShown, Converter={StaticResource Visible}}">
+                        <Rectangle Style="{StaticResource Hairline}" Margin="0,16,0,12" />
+                        <Grid Margin="0,0,0,6">
+                            <TextBlock Text="{loc:Loc traffic.title}" Style="{StaticResource BodyStrongText}" VerticalAlignment="Center" />
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Background="Transparent"
+                                        ToolTip="{loc:Loc traffic.machine.hint}" AutomationProperties.Name="{Binding TrafficMachineSpoken}">
+                                <dash:TrafficRateText Down="True" Parts="{Binding TrafficMachineRx}" Bits="{Binding TrafficBits}" FontSize="13"
+                                                      NumberWeight="Normal" NumberBrush="{DynamicResource TextFillColorSecondaryBrush}"
+                                                      SecondaryBrush="{DynamicResource TextFillColorSecondaryBrush}"
+                                                      DashBrush="{DynamicResource TextFillColorTertiaryBrush}" />
+                                <dash:TrafficRateText Down="False" Parts="{Binding TrafficMachineTx}" Bits="{Binding TrafficBits}" FontSize="13"
+                                                      NumberWeight="Normal" NumberBrush="{DynamicResource TextFillColorSecondaryBrush}"
+                                                      SecondaryBrush="{DynamicResource TextFillColorSecondaryBrush}"
+                                                      DashBrush="{DynamicResource TextFillColorTertiaryBrush}" Margin="14,0,0,0" />
+                            </StackPanel>
+                        </Grid>
+                        <dash:TrafficSparkline x:Name="TrafficChart" Height="28" Margin="0,4,0,10"
+                                               Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                               GridBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+                                               BubbleBrush="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" />
+                        <ItemsControl ItemsSource="{Binding TrafficRows}" Focusable="False"
+                                      Visibility="{Binding TrafficHasRows, Converter={StaticResource Visible}}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type dash:TrafficRowItem}">
+                                    <Grid Height="38">
+                                        <dash:SourceRowButton Style="{StaticResource SourceRowButton}" Click="OnTrafficRow" ShowChevron="True"
+                                                              ReduceMotion="{Binding DataContext.ReduceMotion, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                              AutomationProperties.Name="{Binding AccessibleName}"
+                                                              AutomationProperties.HelpText="{loc:Loc win.dashboard.sourceHint}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="18" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <Ellipse Width="8" Height="8" Fill="{Binding DotBrush}" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Name}" FontSize="13" TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Text="{Binding TodayText}" FontSize="11" TextTrimming="CharacterEllipsis" Margin="0,1,0,0"
+                                                               Typography.NumeralAlignment="Tabular" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                                </StackPanel>
+                                            </Grid>
+                                            <dash:SourceRowButton.Trailing>
+                                                <StackPanel VerticalAlignment="Center" Margin="8,0,0,0">
+                                                    <dash:TrafficRateText Down="True" Parts="{Binding Rx}" Bits="{Binding Bits}" FontSize="11"
+                                                                          NumberBrush="{DynamicResource TextFillColorPrimaryBrush}"
+                                                                          SecondaryBrush="{DynamicResource TextFillColorSecondaryBrush}"
+                                                                          DashBrush="{DynamicResource TextFillColorTertiaryBrush}" />
+                                                    <dash:TrafficRateText Down="False" Parts="{Binding Tx}" Bits="{Binding Bits}" FontSize="11"
+                                                                          NumberBrush="{DynamicResource TextFillColorPrimaryBrush}"
+                                                                          SecondaryBrush="{DynamicResource TextFillColorSecondaryBrush}"
+                                                                          DashBrush="{DynamicResource TextFillColorTertiaryBrush}" />
+                                                </StackPanel>
+                                            </dash:SourceRowButton.Trailing>
+                                        </dash:SourceRowButton>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Button Style="{StaticResource DisclosureButton}" Margin="-6,2,0,0" Click="OnTrafficExpand"
+                                Visibility="{Binding TrafficCanExpand, Converter={StaticResource Visible}}"
+                                AutomationProperties.Name="{Binding TrafficExpandText}">
+                            <TextBlock Text="{Binding TrafficExpandText}" VerticalAlignment="Center" Typography.NumeralAlignment="Tabular" />
+                        </Button>
+                        <StackPanel Visibility="{Binding TrafficUnavailable, Converter={StaticResource HasText}}">
+                            <TextBlock Text="{Binding TrafficUnavailable}" FontSize="11" LineHeight="16" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            <Button Style="{StaticResource LinkButton}" Content="{Binding TrafficHelperButton}" Click="OnTrafficHelper" FontSize="12"
+                                    Height="24" Margin="-4,4,0,0" HorizontalAlignment="Left"
+                                    Visibility="{Binding TrafficHelperButton, Converter={StaticResource HasText}}" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding TrafficCaption}" FontSize="11" Margin="0,6,0,0" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                   Visibility="{Binding TrafficCaption, Converter={StaticResource HasText}}" />
+                    </StackPanel>
+
+                <!-- Warnings: informational, never alarming -->
+                <Grid Margin="0,12,0,0" Visibility="{Binding HasWarning, Converter={StaticResource Visible}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource SymbolIcon}" Text="&#xE946;" FontSize="12" VerticalAlignment="Top" Margin="0,2,8,0"
+                               Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                    <TextBlock Grid.Column="1" Text="{Binding WarningText}" FontSize="11" TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                </Grid>
+
+                <!-- Footer -->
+                <Rectangle Style="{StaticResource Hairline}" Margin="0,14,0,8" />
+                <Button x:Name="UpdatePill" Style="{StaticResource PillButton}" HorizontalAlignment="Left" Margin="0,2,0,8"
+                        Visibility="Collapsed" Click="OnUpdate">
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse Width="6" Height="6" VerticalAlignment="Center" Fill="{DynamicResource AccentFillColorDefaultBrush}" />
+                        <TextBlock x:Name="UpdatePillText" Margin="7,0,0,0" FontWeight="SemiBold" VerticalAlignment="Center"
+                                   Typography.NumeralAlignment="Tabular" />
+                        <TextBlock Style="{StaticResource SymbolIcon}" Text="&#xE76C;" FontSize="9" Margin="6,1,0,0"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    </StackPanel>
+                </Button>
+                <StackPanel x:Name="UpdateDone" Orientation="Horizontal" Margin="2,4,0,10" Visibility="Collapsed">
+                    <TextBlock Style="{StaticResource SymbolIcon}" Text="&#xE73E;" FontSize="12"
+                               Foreground="{DynamicResource SystemFillColorSuccessBrush}" />
+                    <TextBlock x:Name="UpdateDoneText" Style="{StaticResource CaptionText}" Margin="8,0,0,0" VerticalAlignment="Center"
+                               AutomationProperties.LiveSetting="Polite" />
+                </StackPanel>
+                <Grid>
+                    <CheckBox x:Name="OrbToggle" Style="{StaticResource ToggleSwitch}" Content="{loc:Loc settings.orb}"
+                              Click="OnOrbToggled" AutomationProperties.Name="{loc:Loc settings.orb.show}" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button x:Name="InfoButton" Style="{StaticResource SubtleButton}" Click="OnInfo"
+                                ToolTip="{loc:Loc win.dashboard.metricInfo}" AutomationProperties.Name="{loc:Loc win.dashboard.metricInfo}">
+                            <TextBlock Style="{StaticResource SymbolIcon}" Text="&#xE946;" />
+                        </Button>
+                        <!-- Live reporting is on (DESIGN 11, Dashboard footer): static, dimmed while paused, a dot when it needs the user -->
+                        <Button x:Name="ReportIndicator" Style="{StaticResource SubtleButton}" Click="OnReportIndicator" Margin="2,0,0,0" Visibility="Collapsed">
+                            <Grid>
+                                <TextBlock x:Name="ReportGlyph" Style="{StaticResource SymbolIcon}" Text="&#xEC05;"
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                <Ellipse x:Name="ReportAttention" Width="5" Height="5" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-1,-2,0"
+                                         Fill="{DynamicResource SystemFillColorCautionBrush}" Visibility="Collapsed" />
+                            </Grid>
+                        </Button>
+                        <Button Style="{StaticResource SubtleButton}" Click="OnSettings" Margin="2,0,0,0"
+                                ToolTip="{loc:Loc settings.title}" AutomationProperties.Name="{loc:Loc settings.title}">
+                            <TextBlock Style="{StaticResource SymbolIcon}" Text="&#xE713;" />
+                        </Button>
+                        <Button Style="{StaticResource SubtleButton}" Click="OnQuit" Margin="2,0,0,0"
+                                ToolTip="{loc:Loc menu.quit}" AutomationProperties.Name="{loc:Loc menu.quit}">
+                            <TextBlock Style="{StaticResource SymbolIcon}" Text="&#xE7E8;" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+
+                <Popup x:Name="InfoPopup" PlacementTarget="{Binding ElementName=InfoButton}" Placement="Top" StaysOpen="False"
+                       AllowsTransparency="True" PopupAnimation="Fade" HorizontalOffset="-260" VerticalOffset="-6">
+                    <Border Width="300" Margin="12" Padding="14,12" CornerRadius="8" BorderThickness="1"
+                            Background="{DynamicResource ToolTipBackgroundBrush}" BorderBrush="{DynamicResource ToolTipBorderBrush}">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="18" ShadowDepth="3" Direction="270" Opacity="0.22" />
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="{loc:Loc metric.info}" TextWrapping="Wrap" FontSize="12" LineHeight="18"
+                                       Foreground="{DynamicResource ToolTipForegroundBrush}" FontFamily="{DynamicResource AppFontFamily}" />
+                            <!-- The cost explanation follows as a second paragraph (DESIGN 9). -->
+                            <TextBlock Text="{loc:Loc cost.info}" TextWrapping="Wrap" FontSize="12" LineHeight="18" Margin="0,8,0,0"
+                                       Foreground="{DynamicResource ToolTipForegroundBrush}" FontFamily="{DynamicResource AppFontFamily}" />
+                        </StackPanel>
+                    </Border>
+                </Popup>
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+</Window>

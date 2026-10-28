@@ -1,0 +1,57 @@
+<Window x:Class="AgentSpeed.Settings.SettingsWindow"
+        x:ClassModifier="internal"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:AgentSpeed.Localization"
+        xmlns:pages="clr-namespace:AgentSpeed.Settings.Pages"
+        xmlns:controls="clr-namespace:AgentSpeed.Controls"
+        Title="{Binding WindowTitle}"
+        Width="900" Height="680" MinWidth="680" MinHeight="480"
+        WindowStartupLocation="CenterScreen"
+        UseLayoutRounding="True"
+        FontFamily="{DynamicResource AppFontFamily}"
+        Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+    <Grid x:Name="Root">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="272" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Navigation -->
+        <DockPanel Grid.Column="0" Margin="12,8,8,12">
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="10,10,0,18">
+                <Grid Width="28" Height="28">
+                    <Image x:Name="AppIcon" Width="28" Height="28" RenderOptions.BitmapScalingMode="HighQuality" />
+                    <controls:GaugeGlyph x:Name="FallbackIcon" Width="24" Height="24" Heat="0.62" Visibility="Collapsed" />
+                </Grid>
+                <TextBlock Text="{loc:Loc app.name}" Margin="12,0,0,0" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" />
+            </StackPanel>
+            <ListBox x:Name="Navigation" Style="{StaticResource NavigationList}" ItemsSource="{Binding Pages}"
+                     SelectedItem="{Binding SelectedPage, Mode=TwoWay}" AutomationProperties.Name="{loc:Loc win.settings.navigation}" />
+        </DockPanel>
+
+        <!-- Content -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="{Binding PageTitle}" Style="{StaticResource TitleText}" Margin="36,18,36,18"
+                       AutomationProperties.HeadingLevel="Level1" />
+            <ScrollViewer x:Name="PageScroller" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                          Focusable="False" PanningMode="VerticalOnly">
+                <Grid Margin="36,0,36,28" MaxWidth="1000" HorizontalAlignment="Stretch">
+                    <pages:GeneralPage x:Name="GeneralPage" />
+                    <pages:TaskbarPage x:Name="TaskbarPage" />
+                    <pages:OrbPage x:Name="OrbPage" />
+                    <pages:EffectsPage x:Name="EffectsPage" />
+                    <pages:CostPage x:Name="CostPage" DataContext="{Binding Cost}" />
+                    <pages:TrafficPage x:Name="TrafficPage" DataContext="{Binding Traffic}" />
+                    <pages:ReportPage x:Name="ReportPage" DataContext="{Binding Report}" />
+                    <pages:SourcesPage x:Name="SourcesPage" />
+                    <pages:AboutPage x:Name="AboutPage" />
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Window>

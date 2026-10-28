@@ -1,0 +1,125 @@
+<UserControl x:Class="AgentSpeed.Settings.Pages.SourcesPage"
+             x:ClassModifier="internal"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:AgentSpeed.Localization"
+             xmlns:controls="clr-namespace:AgentSpeed.Controls"
+             Focusable="False">
+    <StackPanel>
+        <ItemsControl ItemsSource="{Binding Sources}" Focusable="False">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <controls:SettingsCard Header="{Binding Name}" Description="{Binding Status}" Icon="&#xE9D9;">
+                        <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding Enabled, Mode=TwoWay}" AutomationProperties.Name="{Binding Name}" />
+                    </controls:SettingsCard>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <TextBlock Text="{loc:Loc win.settings.sources.folders}" Style="{StaticResource SectionHeaderText}" Margin="2,20,0,8" />
+        <controls:SettingsCard Header="{loc:Loc source.codex}" Icon="&#xE8B7;" Description="{Binding CodexPath}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding CodexStatus}" Style="{StaticResource CaptionText}" VerticalAlignment="Center" Margin="0,0,12,0" TextWrapping="NoWrap" />
+                <Button Content="{loc:Loc settings.sources.change}" Command="{Binding ChangeCodexCommand}" MinWidth="88" />
+                <Button Content="{loc:Loc settings.sources.reset}" Command="{Binding ResetCodexCommand}" Margin="8,0,0,0" MinWidth="72" />
+            </StackPanel>
+        </controls:SettingsCard>
+        <controls:SettingsCard Header="{loc:Loc win.settings.sources.claude}" Icon="&#xE8B7;" Description="{Binding ClaudePath}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding ClaudeStatus}" Style="{StaticResource CaptionText}" VerticalAlignment="Center" Margin="0,0,12,0" TextWrapping="NoWrap" />
+                <Button Content="{loc:Loc settings.sources.change}" Command="{Binding ChangeClaudeCommand}" MinWidth="88" />
+                <Button Content="{loc:Loc settings.sources.reset}" Command="{Binding ResetClaudeCommand}" Margin="8,0,0,0" MinWidth="72" />
+            </StackPanel>
+        </controls:SettingsCard>
+        <TextBlock Text="{loc:Loc settings.sources.sharedRoot}" Style="{StaticResource CaptionText}" Margin="2,6,0,0" />
+        <controls:SettingsCard Header="{loc:Loc source.deepseek}" Icon="&#xE8B7;" Description="{Binding DshPath}" Margin="0,12,0,4">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding DshStatus}" Style="{StaticResource CaptionText}" VerticalAlignment="Center" Margin="0,0,12,0" TextWrapping="NoWrap" />
+                <Button Content="{loc:Loc settings.sources.change}" Command="{Binding ChangeDshCommand}" MinWidth="88" />
+                <Button Content="{loc:Loc settings.sources.reset}" Command="{Binding ResetDshCommand}" Margin="8,0,0,0" MinWidth="72" />
+            </StackPanel>
+        </controls:SettingsCard>
+        <TextBlock Text="{loc:Loc settings.sources.dshHint}" Style="{StaticResource CaptionText}" Margin="2,6,0,0" />
+        <controls:SettingsCard Header="{loc:Loc source.opencode}" Icon="&#xE8B7;" Description="{Binding OpenCodePath}" Margin="0,12,0,4">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding OpenCodeStatus}" Style="{StaticResource CaptionText}" VerticalAlignment="Center" Margin="0,0,12,0" TextWrapping="NoWrap" />
+                <Button Content="{loc:Loc settings.sources.change}" Command="{Binding ChangeOpenCodeCommand}" MinWidth="88" />
+                <Button Content="{loc:Loc settings.sources.reset}" Command="{Binding ResetOpenCodeCommand}" Margin="8,0,0,0" MinWidth="72" />
+            </StackPanel>
+        </controls:SettingsCard>
+        <TextBlock Text="{loc:Loc settings.sources.opencodeHint}" Style="{StaticResource CaptionText}" Margin="2,6,0,0" />
+        <controls:SettingsCard Header="{loc:Loc source.gemini}" Icon="&#xE8B7;" Description="{Binding GeminiPath}" Margin="0,12,0,4">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding GeminiStatus}" Style="{StaticResource CaptionText}" VerticalAlignment="Center" Margin="0,0,12,0" TextWrapping="NoWrap" />
+                <Button Content="{loc:Loc settings.sources.change}" Command="{Binding ChangeGeminiCommand}" MinWidth="88" />
+                <Button Content="{loc:Loc settings.sources.reset}" Command="{Binding ResetGeminiCommand}" Margin="8,0,0,0" MinWidth="72" />
+            </StackPanel>
+        </controls:SettingsCard>
+        <TextBlock Text="{loc:Loc settings.sources.geminiHint}" Style="{StaticResource CaptionText}" Margin="2,6,0,0" />
+        <controls:SettingsCard Header="{loc:Loc source.omp}" Icon="&#xE8B7;" Description="{Binding OmpPath}" Margin="0,12,0,4">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding OmpStatus}" Style="{StaticResource CaptionText}" VerticalAlignment="Center" Margin="0,0,12,0" TextWrapping="NoWrap" />
+                <Button Content="{loc:Loc settings.sources.change}" Command="{Binding ChangeOmpCommand}" MinWidth="88" />
+                <Button Content="{loc:Loc settings.sources.reset}" Command="{Binding ResetOmpCommand}" Margin="8,0,0,0" MinWidth="72" />
+            </StackPanel>
+        </controls:SettingsCard>
+        <TextBlock Text="{loc:Loc settings.sources.ompHint}" Style="{StaticResource CaptionText}" Margin="2,6,0,0" />
+        <controls:SettingsCard Header="{loc:Loc source.antigravity}" Icon="&#xE8B7;" Description="{Binding AntigravityPath}" Margin="0,12,0,4">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding AntigravityStatus}" Style="{StaticResource CaptionText}" VerticalAlignment="Center" Margin="0,0,12,0" TextWrapping="NoWrap" />
+                <Button Content="{loc:Loc settings.sources.change}" Command="{Binding ChangeAntigravityCommand}" MinWidth="88" />
+                <Button Content="{loc:Loc settings.sources.reset}" Command="{Binding ResetAntigravityCommand}" Margin="8,0,0,0" MinWidth="72" />
+            </StackPanel>
+        </controls:SettingsCard>
+        <TextBlock Text="{loc:Loc settings.sources.antigravityHint}" Style="{StaticResource CaptionText}" Margin="2,6,0,0" />
+        <controls:SettingsCard Header="{loc:Loc source.workbuddy}" Icon="&#xE8B7;" Description="{Binding WorkBuddyPath}" Margin="0,12,0,4">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding WorkBuddyStatus}" Style="{StaticResource CaptionText}" VerticalAlignment="Center" Margin="0,0,12,0" TextWrapping="NoWrap" />
+                <Button Content="{loc:Loc settings.sources.change}" Command="{Binding ChangeWorkBuddyCommand}" MinWidth="88" />
+                <Button Content="{loc:Loc settings.sources.reset}" Command="{Binding ResetWorkBuddyCommand}" Margin="8,0,0,0" MinWidth="72" />
+            </StackPanel>
+        </controls:SettingsCard>
+        <TextBlock Text="{loc:Loc settings.sources.workbuddyHint}" Style="{StaticResource CaptionText}" Margin="2,6,0,0" />
+        <controls:SettingsCard Header="{loc:Loc source.workbuddyAi}" Icon="&#xE8B7;" Description="{Binding WorkBuddyAiPath}" Margin="0,12,0,4">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding WorkBuddyAiStatus}" Style="{StaticResource CaptionText}" VerticalAlignment="Center" Margin="0,0,12,0" TextWrapping="NoWrap" />
+                <Button Content="{loc:Loc settings.sources.change}" Command="{Binding ChangeWorkBuddyAiCommand}" MinWidth="88" />
+                <Button Content="{loc:Loc settings.sources.reset}" Command="{Binding ResetWorkBuddyAiCommand}" Margin="8,0,0,0" MinWidth="72" />
+            </StackPanel>
+        </controls:SettingsCard>
+        <TextBlock Text="{loc:Loc settings.sources.workbuddyAiHint}" Style="{StaticResource CaptionText}" Margin="2,6,0,0" />
+
+        <controls:SettingsCard Header="{loc:Loc source.zcode}" Icon="&#xE8B7;" Description="{Binding ZCodePath}" Margin="0,12,0,4">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding ZCodeStatus}" Style="{StaticResource CaptionText}" VerticalAlignment="Center" Margin="0,0,12,0" TextWrapping="NoWrap" />
+                <Button Content="{loc:Loc settings.sources.change}" Command="{Binding ChangeZCodeCommand}" MinWidth="88" />
+                <Button Content="{loc:Loc settings.sources.reset}" Command="{Binding ResetZCodeCommand}" Margin="8,0,0,0" MinWidth="72" />
+            </StackPanel>
+        </controls:SettingsCard>
+        <TextBlock Text="{loc:Loc settings.sources.zcodeHint}" Style="{StaticResource CaptionText}" Margin="2,6,0,0" />
+        <controls:SettingsCard Header="{loc:Loc source.kimi}" Icon="&#xE8B7;" Description="{Binding KimiPath}" Margin="0,12,0,4">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding KimiStatus}" Style="{StaticResource CaptionText}" VerticalAlignment="Center" Margin="0,0,12,0" TextWrapping="NoWrap" />
+                <Button Content="{loc:Loc settings.sources.change}" Command="{Binding ChangeKimiCommand}" MinWidth="88" />
+                <Button Content="{loc:Loc settings.sources.reset}" Command="{Binding ResetKimiCommand}" Margin="8,0,0,0" MinWidth="72" />
+            </StackPanel>
+        </controls:SettingsCard>
+        <TextBlock Text="{loc:Loc settings.sources.kimiHint}" Style="{StaticResource CaptionText}" Margin="2,6,0,0" />
+        <controls:SettingsCard Header="{loc:Loc source.grokBuild}" Icon="&#xE8B7;" Description="{Binding GrokBuildPath}" Margin="0,12,0,4">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding GrokBuildStatus}" Style="{StaticResource CaptionText}" VerticalAlignment="Center" Margin="0,0,12,0" TextWrapping="NoWrap" />
+                <Button Content="{loc:Loc settings.sources.change}" Command="{Binding ChangeGrokBuildCommand}" MinWidth="88" />
+                <Button Content="{loc:Loc settings.sources.reset}" Command="{Binding ResetGrokBuildCommand}" Margin="8,0,0,0" MinWidth="72" />
+            </StackPanel>
+        </controls:SettingsCard>
+        <TextBlock Text="{loc:Loc settings.sources.grokBuildHint}" Style="{StaticResource CaptionText}" Margin="2,6,0,0" />
+
+        <controls:SettingsCard Header="{loc:Loc history.title}" Description="{loc:Loc history.privacy}" Icon="&#xE81C;" ContentBelow="True"
+                               Margin="0,24,0,4">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <Button Content="{loc:Loc history.open}" Command="{Binding OpenHistoryCommand}" MinWidth="104" />
+                <Button Content="{loc:Loc history.clear}" Command="{Binding ClearHistoryCommand}" MinWidth="104" Margin="8,0,0,0" />
+            </StackPanel>
+        </controls:SettingsCard>
+    </StackPanel>
+</UserControl>

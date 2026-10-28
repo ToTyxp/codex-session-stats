@@ -1,0 +1,58 @@
+<UserControl x:Class="AgentSpeed.Settings.Pages.TaskbarPage"
+             x:ClassModifier="internal"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:AgentSpeed.Localization"
+             xmlns:controls="clr-namespace:AgentSpeed.Controls"
+             Focusable="False">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="Visible" />
+    </UserControl.Resources>
+    <StackPanel>
+        <controls:SettingsCard Header="{loc:Loc settings.bar.show}" Icon="&#xE7F4;" Description="{loc:Loc win.settings.bar.show.description}">
+            <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding ShowOnTaskbar, Mode=TwoWay}" AutomationProperties.Name="{loc:Loc settings.bar.show}" />
+        </controls:SettingsCard>
+        <Border Margin="0,0,0,4" Padding="16,10" CornerRadius="4" Background="{DynamicResource SystemFillColorCautionBackgroundBrush}"
+                Visibility="{Binding HasTaskbarStatus, Converter={StaticResource Visible}}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Style="{StaticResource SymbolIcon}" Text="&#xE946;" Margin="0,0,12,0" />
+                <TextBlock Text="{Binding TaskbarStatus}" Style="{StaticResource CaptionText}" VerticalAlignment="Center"
+                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+            </StackPanel>
+        </Border>
+        <controls:SettingsCard Header="{loc:Loc settings.bar.mode}" Icon="&#xE8A9;">
+            <ComboBox MinWidth="200" SelectedIndex="{Binding BarModeIndex, Mode=TwoWay}" AutomationProperties.Name="{loc:Loc settings.bar.mode}">
+                <ComboBoxItem Content="{loc:Loc settings.bar.mode.glyphValue}" />
+                <ComboBoxItem Content="{loc:Loc settings.bar.mode.value}" />
+                <ComboBoxItem Content="{loc:Loc settings.bar.mode.glyph}" />
+            </ComboBox>
+        </controls:SettingsCard>
+        <controls:SettingsCard Header="{loc:Loc settings.bar.colored}" Icon="&#xE790;">
+            <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding BarColoredGlyph, Mode=TwoWay}" AutomationProperties.Name="{loc:Loc settings.bar.colored}" />
+        </controls:SettingsCard>
+        <controls:SettingsCard Header="{loc:Loc settings.bar.unit}" Icon="&#xE8D2;">
+            <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding BarShowUnit, Mode=TwoWay}" AutomationProperties.Name="{loc:Loc settings.bar.unit}" />
+        </controls:SettingsCard>
+        <!-- DESIGN 10: the same control as in Settings → 網路流量 -->
+        <controls:SettingsCard Header="{loc:Loc settings.bar.traffic}" Icon="&#xE839;" IsEnabled="{Binding Traffic.Enabled}">
+            <ComboBox MinWidth="200" SelectedIndex="{Binding Traffic.BarIndex, Mode=TwoWay}" AutomationProperties.Name="{loc:Loc settings.bar.traffic}">
+                <ComboBoxItem Content="{loc:Loc settings.bar.traffic.off}" />
+                <ComboBoxItem Content="{loc:Loc settings.bar.traffic.machine}" />
+                <ComboBoxItem Content="{loc:Loc settings.bar.traffic.agents}" />
+            </ComboBox>
+        </controls:SettingsCard>
+        <controls:SettingsCard Header="{loc:Loc settings.liveUnit}" Icon="&#xEC4A;" Description="{loc:Loc settings.liveUnit.hint}">
+            <Border Style="{StaticResource SegmentedContainer}">
+                <StackPanel Orientation="Horizontal">
+                    <!-- DESIGN 3: tok/s, money, or tok/s with the money rate after it -->
+                    <RadioButton Style="{StaticResource SegmentedItem}" GroupName="TaskbarLiveUnit" MinWidth="64"
+                                 Content="{loc:Loc settings.liveUnit.tokens}" IsChecked="{Binding Cost.BarValueTokens, Mode=TwoWay}" />
+                    <RadioButton Style="{StaticResource SegmentedItem}" GroupName="TaskbarLiveUnit" MinWidth="64" Typography.NumeralAlignment="Tabular"
+                                 Content="{Binding Cost.LiveUnitCostLabel}" IsChecked="{Binding Cost.BarValueCost, Mode=TwoWay}" />
+                    <RadioButton Style="{StaticResource SegmentedItem}" GroupName="TaskbarLiveUnit" MinWidth="64"
+                                 Content="{loc:Loc settings.liveUnit.both}" IsChecked="{Binding Cost.BarValueBoth, Mode=TwoWay}" />
+                </StackPanel>
+            </Border>
+        </controls:SettingsCard>
+    </StackPanel>
+</UserControl>

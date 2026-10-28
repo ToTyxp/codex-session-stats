@@ -1,0 +1,133 @@
+<Window x:Class="AgentSpeed.Updates.UpdateWindow"
+        x:ClassModifier="internal"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:AgentSpeed.Localization"
+        xmlns:controls="clr-namespace:AgentSpeed.Controls"
+        xmlns:updates="clr-namespace:AgentSpeed.Updates"
+        Title="{loc:Loc app.name}"
+        Width="480"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        ShowInTaskbar="True"
+        UseLayoutRounding="True"
+        FontFamily="{DynamicResource AppFontFamily}"
+        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+        AutomationProperties.Name="{Binding Title}">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="Visible" />
+    </Window.Resources>
+
+    <StackPanel Margin="24,20,24,20">
+        <!-- Header: icon, title, current version -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid Width="48" Height="48" VerticalAlignment="Top">
+                <Image x:Name="AppIcon" Width="48" Height="48" RenderOptions.BitmapScalingMode="HighQuality" />
+                <controls:GaugeGlyph x:Name="FallbackIcon" Width="40" Height="40" Heat="0.62" Visibility="Collapsed" />
+            </Grid>
+            <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center">
+                <TextBlock Text="{Binding Title}" Style="{StaticResource SubtitleText}" TextWrapping="Wrap"
+                           AutomationProperties.HeadingLevel="Level1" />
+                <TextBlock Text="{Binding Subtitle}" Style="{StaticResource CaptionText}" Margin="0,3,0,0"
+                           Typography.NumeralAlignment="Tabular" />
+            </StackPanel>
+        </Grid>
+
+        <!-- Release notes -->
+        <StackPanel Margin="0,20,0,0" Visibility="{Binding ShowNotes, Converter={StaticResource Visible}}">
+            <TextBlock Text="{loc:Loc update.notes}" Style="{StaticResource BodyStrongText}" Margin="0,0,0,8" />
+            <Border CornerRadius="6" BorderThickness="1" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
+                <ScrollViewer MaxHeight="240" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                              PanningMode="VerticalOnly" Focusable="True" IsTabStop="True"
+                              AutomationProperties.Name="{loc:Loc update.notes}">
+                    <ItemsControl ItemsSource="{Binding Notes}" Margin="14,10,14,10" Focusable="False">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type updates:NoteLine}">
+                                <Grid Margin="{Binding Margin}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock x:Name="Marker" Text="{Binding Marker}" MinWidth="16" FontSize="13" Visibility="Collapsed"
+                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" Typography.NumeralAlignment="Tabular" />
+                                    <TextBlock x:Name="Body" Grid.Column="1" Text="{Binding Text}" FontSize="13" LineHeight="19"
+                                               TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                                </Grid>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding HasMarker}" Value="True">
+                                        <Setter TargetName="Marker" Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsHeading}" Value="True">
+                                        <Setter TargetName="Body" Property="FontWeight" Value="SemiBold" />
+                                        <Setter TargetName="Body" Property="FontSize" Value="14" />
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
+        </StackPanel>
+
+        <!-- Progress: checking, downloading, verifying, installing -->
+        <StackPanel Margin="0,20,0,0" Visibility="{Binding ShowProgress, Converter={StaticResource Visible}}">
+            <TextBlock Text="{Binding ProgressText}" Style="{StaticResource CaptionText}" Typography.NumeralAlignment="Tabular"
+                       AutomationProperties.LiveSetting="Polite" />
+            <ProgressBar Margin="0,8,0,0" Height="4" Minimum="0" Maximum="100" Value="{Binding ProgressPercent, Mode=OneWay}"
+                         IsIndeterminate="{Binding IsIndeterminate, Mode=OneWay}" AutomationProperties.Name="{Binding ProgressText}" />
+        </StackPanel>
+
+        <!-- Error -->
+        <Grid Margin="0,20,0,0" Visibility="{Binding ShowError, Converter={StaticResource Visible}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Style="{StaticResource SymbolIcon}" Text="&#xE783;" FontSize="16" VerticalAlignment="Top" Margin="0,1,10,0"
+                       Foreground="{DynamicResource SystemFillColorCriticalBrush}" />
+            <TextBlock Grid.Column="1" Text="{Binding ErrorText}" Style="{StaticResource BodyText}" AutomationProperties.LiveSetting="Assertive" />
+        </Grid>
+
+        <!-- Buttons: the primary action is always fully visible; a long secondary label trims instead. -->
+        <Grid Margin="0,24,0,0" Visibility="{Binding ShowOffer, Converter={StaticResource Visible}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Style="{StaticResource LinkButton}" Command="{Binding SkipCommand}" Margin="-4,0,12,0"
+                    Height="32" FontSize="13" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                    ToolTip="{loc:Loc update.skip}" AutomationProperties.Name="{loc:Loc update.skip}">
+                <TextBlock Text="{loc:Loc update.skip}" TextTrimming="CharacterEllipsis" />
+            </Button>
+            <Button Grid.Column="1" Content="{loc:Loc update.later}" Command="{Binding CloseCommand}" MinWidth="72"
+                    IsCancel="{Binding ShowOffer}" />
+            <Button x:Name="InstallButton" Grid.Column="2" Content="{loc:Loc update.install}" Command="{Binding InstallCommand}"
+                    Style="{DynamicResource AccentButtonStyle}" MinWidth="120" Margin="8,0,0,0" IsDefault="{Binding ShowOffer}" />
+        </Grid>
+
+        <Grid Margin="0,24,0,0" Visibility="{Binding ShowDismiss, Converter={StaticResource Visible}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Style="{StaticResource LinkButton}" Command="{Binding OpenReleaseCommand}" Margin="-4,0,12,0"
+                    Height="32" FontSize="13" AutomationProperties.Name="{loc:Loc update.openRelease}"
+                    Visibility="{Binding ShowError, Converter={StaticResource Visible}}">
+                <TextBlock Text="{loc:Loc update.openRelease}" TextTrimming="CharacterEllipsis" />
+            </Button>
+            <Button x:Name="DismissButton" Grid.Column="1" Content="{Binding DismissText}" Command="{Binding CloseCommand}" MinWidth="80"
+                    IsCancel="{Binding ShowDismiss}" IsDefault="{Binding DismissIsDefault}" />
+            <Button x:Name="RetryButton" Grid.Column="2" Content="{loc:Loc update.retry}" Command="{Binding RetryCommand}"
+                    Style="{DynamicResource AccentButtonStyle}" MinWidth="96" Margin="8,0,0,0"
+                    IsDefault="{Binding ShowRetry}" Visibility="{Binding ShowRetry, Converter={StaticResource Visible}}" />
+        </Grid>
+    </StackPanel>
+</Window>

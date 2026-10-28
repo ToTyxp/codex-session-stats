@@ -1,0 +1,151 @@
+<UserControl x:Class="AgentSpeed.Settings.Pages.TrafficPage"
+             x:ClassModifier="internal"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:AgentSpeed.Localization"
+             xmlns:controls="clr-namespace:AgentSpeed.Controls"
+             Focusable="False">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="Visible" />
+        <controls:HelperDotBrushConverter x:Key="DotBrush" />
+        <controls:TextToVisibilityConverter x:Key="HasText" />
+
+        <Style x:Key="GroupCard" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Margin" Value="0,0,0,4" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+        </Style>
+
+        <!-- The destructive text button (traffic.helper.remove): critical text, no fill until hovered. -->
+        <Style x:Key="DestructiveLinkButton" TargetType="Button" BasedOn="{StaticResource LinkButton}">
+            <Setter Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+        </Style>
+    </UserControl.Resources>
+
+    <StackPanel>
+        <!-- 1–4. Measuring, tools, the unit and the taskbar block (DESIGN 10, Settings) -->
+        <controls:SettingsCard Header="{loc:Loc settings.traffic.enabled}" Icon="&#xE839;" Description="{loc:Loc settings.traffic.enabled.hint}">
+            <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding Enabled, Mode=TwoWay}"
+                      AutomationProperties.Name="{loc:Loc settings.traffic.enabled}" AutomationProperties.HelpText="{loc:Loc settings.traffic.enabled.hint}" />
+        </controls:SettingsCard>
+        <StackPanel Orientation="Horizontal" Margin="16,2,16,8" Visibility="{Binding ReportNote, Converter={StaticResource HasText}}">
+            <TextBlock Style="{StaticResource SymbolIcon}" Text="&#xEC05;" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+            <TextBlock Text="{Binding ReportNote}" Style="{StaticResource CaptionText}" Margin="8,0,0,0" />
+        </StackPanel>
+        <controls:SettingsCard Header="{loc:Loc settings.traffic.includeTools}" Icon="&#xE90F;" Description="{loc:Loc settings.traffic.includeTools.hint}"
+                               IsEnabled="{Binding Enabled}">
+            <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding IncludeTools, Mode=TwoWay}"
+                      AutomationProperties.Name="{loc:Loc settings.traffic.includeTools}" AutomationProperties.HelpText="{loc:Loc settings.traffic.includeTools.hint}" />
+        </controls:SettingsCard>
+        <controls:SettingsCard Header="{loc:Loc settings.traffic.unit}" Icon="&#xEC48;" IsEnabled="{Binding Enabled}">
+            <Border Style="{StaticResource SegmentedContainer}">
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton Style="{StaticResource SegmentedItem}" GroupName="TrafficUnit" MinWidth="64"
+                                 Content="{loc:Loc settings.traffic.unit.bytes}" IsChecked="{Binding UnitIsBytes, Mode=TwoWay}" />
+                    <RadioButton Style="{StaticResource SegmentedItem}" GroupName="TrafficUnit" MinWidth="64"
+                                 Content="{loc:Loc settings.traffic.unit.bits}" IsChecked="{Binding UnitIsBits, Mode=TwoWay}" />
+                </StackPanel>
+            </Border>
+        </controls:SettingsCard>
+        <controls:SettingsCard Header="{loc:Loc settings.bar.traffic}" Icon="&#xE7F4;" IsEnabled="{Binding Enabled}">
+            <ComboBox MinWidth="200" SelectedIndex="{Binding BarIndex, Mode=TwoWay}" AutomationProperties.Name="{loc:Loc settings.bar.traffic}">
+                <ComboBoxItem Content="{loc:Loc settings.bar.traffic.off}" />
+                <ComboBoxItem Content="{loc:Loc settings.bar.traffic.machine}" />
+                <ComboBoxItem Content="{loc:Loc settings.bar.traffic.agents}" />
+            </ComboBox>
+        </controls:SettingsCard>
+
+        <!-- 5. Per-agent traffic: the helper service (WINDOWS-SERVICE) -->
+        <StackPanel Visibility="{Binding ShowsHelper, Converter={StaticResource Visible}}">
+            <TextBlock Text="{loc:Loc traffic.status}" Style="{StaticResource SectionHeaderText}" Margin="2,20,0,8"
+                       AutomationProperties.HeadingLevel="Level2" />
+            <Border Style="{StaticResource GroupCard}" Padding="16,14,16,14">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" MinWidth="160" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Style="{StaticResource SymbolIcon}" Text="&#xE83D;" FontSize="20"
+                               VerticalAlignment="Top" Margin="2,2,18,0" />
+
+                    <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,0,16,0">
+                        <TextBlock Text="{loc:Loc traffic.helper}" Style="{StaticResource BodyText}" AutomationProperties.HeadingLevel="Level3" />
+                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                            <Ellipse Width="8" Height="8" Margin="1,1,8,0" VerticalAlignment="Center"
+                                     Fill="{Binding StatusDot, Converter={StaticResource DotBrush}}" />
+                            <TextBlock Text="{Binding StatusText}" Style="{StaticResource CaptionText}" Typography.NumeralAlignment="Tabular"
+                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"
+                                       AutomationProperties.LiveSetting="Polite" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Top">
+                        <Button Command="{Binding RetryCommand}" Content="{loc:Loc traffic.retry}" Style="{StaticResource LinkButton}" Margin="0,0,8,0"
+                                Visibility="{Binding ShowsRetry, Converter={StaticResource Visible}}" />
+                        <Button Command="{Binding RemoveCommand}" Content="{loc:Loc traffic.helper.remove}" Style="{StaticResource DestructiveLinkButton}"
+                                Margin="0,0,8,0" Visibility="{Binding ShowsRemove, Converter={StaticResource Visible}}" />
+                        <Button x:Name="PrimaryButton" Command="{Binding PrimaryCommand}" MinWidth="148" Style="{DynamicResource AccentButtonStyle}"
+                                ToolTip="{Binding PrimaryTooltip}" ToolTipService.ShowOnDisabled="True"
+                                AutomationProperties.Name="{Binding PrimaryText}"
+                                Visibility="{Binding ShowsPrimary, Converter={StaticResource Visible}}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image x:Name="Shield" Width="16" Height="16" Margin="0,0,8,0" VerticalAlignment="Center"
+                                       RenderOptions.BitmapScalingMode="HighQuality" />
+                                <TextBlock Text="{Binding PrimaryText}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Always visible: what the helper is and why Windows needs it -->
+                    <StackPanel Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Margin="0,10,0,0">
+                        <TextBlock Text="{loc:Loc traffic.helper.explain}" Style="{StaticResource CaptionText}" FontSize="11" LineHeight="16" />
+                        <Button Style="{StaticResource LinkButton}" Content="{loc:Loc traffic.helper.details}" Command="{Binding DetailsCommand}"
+                                FontSize="12" Height="24" Margin="-4,4,0,-2" HorizontalAlignment="Left"
+                                ToolTip="{Binding DetailsLink}" />
+                    </StackPanel>
+
+                    <!-- The inline note: the UAC note while waiting, then the result -->
+                    <Border Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="2" Margin="0,12,0,0" Padding="12,10" CornerRadius="4"
+                            Background="{DynamicResource SubtleFillColorSecondaryBrush}"
+                            Visibility="{Binding HasNote, Converter={StaticResource Visible}}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <controls:ProgressRing Grid.Column="0" Width="16" Height="16" Thickness="2" Margin="0,1,10,0" VerticalAlignment="Top"
+                                                   Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                                                   Visibility="{Binding IsBusy, Converter={StaticResource Visible}}" />
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="{Binding Note}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource CaptionText}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding NoteIsError}" Value="True">
+                                                    <Setter Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Text="{loc:Loc traffic.helper.installing}" Style="{StaticResource CaptionText}" Margin="0,4,0,0"
+                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                           Visibility="{Binding IsBusy, Converter={StaticResource Visible}}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

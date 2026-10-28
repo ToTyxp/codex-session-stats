@@ -1,0 +1,91 @@
+<UserControl x:Class="AgentSpeed.Settings.Pages.AboutPage"
+             x:ClassModifier="internal"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:AgentSpeed.Localization"
+             xmlns:controls="clr-namespace:AgentSpeed.Controls"
+             Focusable="False">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="Visible" />
+    </UserControl.Resources>
+    <StackPanel>
+        <Border Padding="20" CornerRadius="4" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" Margin="0,0,0,4">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <controls:GaugeGlyph Width="40" Height="40" Heat="0.78" />
+                    <StackPanel Margin="16,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="{loc:Loc app.name}" Style="{StaticResource SubtitleText}" />
+                        <TextBlock Text="{Binding VersionText}" Style="{StaticResource CaptionText}" Margin="0,2,0,0" />
+                    </StackPanel>
+                </StackPanel>
+                <TextBlock Text="{Binding PrivacyStatement}" Style="{StaticResource BodyText}" Margin="0,16,0,0" />
+                <TextBlock Text="{Binding PrivacyTraffic}" Style="{StaticResource BodyText}" Margin="0,8,0,0" />
+                <TextBlock Text="{Binding PrivacyReport}" Style="{StaticResource BodyText}" Margin="0,8,0,0" />
+                <TextBlock Text="{loc:Loc settings.about.update}" Style="{StaticResource CaptionText}" Margin="0,8,0,0" />
+                <StackPanel Orientation="Horizontal" Margin="-4,12,0,0">
+                    <Button Style="{StaticResource LinkButton}" Command="{Binding OpenRepositoryCommand}" Content="{loc:Loc settings.about.github}" />
+                    <Button Style="{StaticResource LinkButton}" Command="{Binding OpenLicenseCommand}" Content="{loc:Loc win.settings.about.license}" Margin="12,0,0,0" />
+                    <Button Style="{StaticResource LinkButton}" Command="{Binding OpenLogsCommand}" Content="{loc:Loc win.settings.about.logs}" Margin="12,0,0,0" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Network: the master switch for the update check, the price table and the exchange rates (NETWORK 1) -->
+        <controls:SettingsCard Header="{loc:Loc settings.network}" Icon="&#xE774;" Description="{Binding NetworkHint}" Margin="0,12,0,4">
+            <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding NetworkEnabled, Mode=TwoWay}"
+                      AutomationProperties.Name="{loc:Loc settings.network}" AutomationProperties.HelpText="{Binding NetworkHint}" />
+        </controls:SettingsCard>
+
+        <TextBlock Text="{loc:Loc win.settings.about.updates}" Style="{StaticResource SectionHeaderText}" Margin="2,20,0,8"
+                   AutomationProperties.HeadingLevel="Level2" />
+        <Border Padding="16,12,16,12" MinHeight="68" CornerRadius="4" BorderThickness="1" Margin="0,0,0,4"
+                Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" MinWidth="120" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Style="{StaticResource SymbolIcon}" Text="&#xE895;" FontSize="20" Margin="2,0,18,0" />
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                    <TextBlock Text="{Binding UpdateCurrentText}" Style="{StaticResource BodyText}" Typography.NumeralAlignment="Tabular" />
+                    <TextBlock Text="{Binding UpdateStatusText}" Margin="0,1,0,0" AutomationProperties.LiveSetting="Polite"
+                               Visibility="{Binding HasUpdateStatus, Converter={StaticResource Visible}}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource CaptionText}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding UpdateStatusIsAvailable}" Value="True">
+                                        <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding UpdateStatusIsError}" Value="True">
+                                        <Setter Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <TextBlock Text="{Binding UpdateLastCheckedText}" Style="{StaticResource CaptionText}" Margin="0,1,0,0"
+                               Visibility="{Binding HasUpdateLastChecked, Converter={StaticResource Visible}}" />
+                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0" Visibility="{Binding NetworkOff, Converter={StaticResource Visible}}">
+                        <TextBlock Style="{StaticResource SymbolIcon}" Text="&#xE946;" FontSize="12" Margin="0,1,6,0"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        <TextBlock Text="{loc:Loc settings.network.offHint}" Style="{StaticResource CaptionText}" />
+                    </StackPanel>
+                </StackPanel>
+                <Grid Grid.Column="2" VerticalAlignment="Center">
+                    <Button Content="{loc:Loc update.check}" Command="{Binding CheckForUpdatesCommand}" MinWidth="120"
+                            ToolTip="{Binding NetworkOffTooltip}" ToolTipService.ShowOnDisabled="True"
+                            Visibility="{Binding ShowCheckButton, Converter={StaticResource Visible}}" />
+                    <Button Content="{Binding UpdateButtonText}" Command="{Binding OpenUpdateCommand}" MinWidth="120"
+                            Style="{DynamicResource AccentButtonStyle}"
+                            Visibility="{Binding IsUpdateAvailable, Converter={StaticResource Visible}}" />
+                </Grid>
+            </Grid>
+        </Border>
+        <controls:SettingsCard Header="{loc:Loc update.auto}" Icon="&#xE823;" Description="{Binding UpdateAutoHint}" IsEnabled="{Binding NetworkEnabled}">
+            <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding AutoCheckUpdates, Mode=TwoWay}"
+                      AutomationProperties.Name="{loc:Loc update.auto}" />
+        </controls:SettingsCard>
+    </StackPanel>
+</UserControl>

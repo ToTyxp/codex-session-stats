@@ -1,0 +1,90 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <AssemblyName>AgentSpeed</AssemblyName>
+    <RootNamespace>AgentSpeed</RootNamespace>
+    <StartupObject>AgentSpeed.App.Program</StartupObject>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <SatelliteResourceLanguages>en;zh-Hant;zh-Hans;ja</SatelliteResourceLanguages>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <!-- WPF0001: Application.ThemeMode (Fluent theme) is marked experimental in .NET 9/10; it is the supported way to
+         get native Windows 11 Fluent controls and Mica in WPF, so the diagnostic is intentionally acknowledged. -->
+    <NoWarn>$(NoWarn);WPF0001</NoWarn>
+    <DefaultItemExcludes>$(DefaultItemExcludes);bin/**;obj/**</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="Exists('$(MSBuildThisFileDirectory)..\..\..\assets\icon\AgentSpeed.ico')">
+    <ApplicationIcon>$(MSBuildThisFileDirectory)..\..\..\assets\icon\AgentSpeed.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup Condition="Exists('$(MSBuildThisFileDirectory)..\..\..\assets\icon\AgentSpeed.ico')">
+    <Resource Include="..\..\..\assets\icon\AgentSpeed.ico" Link="Assets\AgentSpeed.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System.IO" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="AgentSpeed.Windows.Tests" />
+    <InternalsVisibleTo Include="AgentSpeed.ProfileHarness" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AgentSpeed.Core\AgentSpeed.Core.csproj" />
+    <ProjectReference Include="..\AgentSpeed.Presentation\AgentSpeed.Presentation.csproj" />
+  </ItemGroup>
+
+  <!-- The floating orb's Direct3D 11 + DirectComposition renderer (DESIGN 2a, Techniques). Managed bindings only (MIT);
+       the native side is Windows' own d3d11, dxgi, dcomp and d3dcompiler_47. Versions are pinned. -->
+  <ItemGroup>
+    <PackageReference Include="Vortice.Direct3D11" Version="[3.8.3]" />
+    <PackageReference Include="Vortice.DXGI" Version="[3.8.3]" />
+    <PackageReference Include="Vortice.DirectComposition" Version="[3.8.3]" />
+    <PackageReference Include="Vortice.D3DCompiler" Version="[3.8.3]" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Orb\Gpu\Shaders\*.hlsl" LogicalName="AgentSpeed.Orb.Shaders.%(Filename).hlsl" />
+  </ItemGroup>
+
+  <!-- WINDOWS-SERVICE 2: the NativeAOT traffic helper, published beforehand (windows/scripts/publish.ps1), is embedded
+       with its SHA-256. TrafficHelperDir holds win-x64/ and/or win-arm64/AgentSpeedTrafficHelper.exe; a RID-specific
+       build embeds only its own architecture. Without the property or the files the app builds without a helper. -->
+  <PropertyGroup Condition="'$(TrafficHelperDir)' != ''">
+    <_TrafficHelperRoot>$([MSBuild]::EnsureTrailingSlash('$(TrafficHelperDir)'))</_TrafficHelperRoot>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(_TrafficHelperRoot)' != ''">
+    <TrafficHelperImage Include="$(_TrafficHelperRoot)win-x64/AgentSpeedTrafficHelper.exe" Rid="win-x64"
+        Condition="Exists('$(_TrafficHelperRoot)win-x64/AgentSpeedTrafficHelper.exe') and ('$(RuntimeIdentifier)' == '' or '$(RuntimeIdentifier)' == 'win-x64')" />
+    <TrafficHelperImage Include="$(_TrafficHelperRoot)win-arm64/AgentSpeedTrafficHelper.exe" Rid="win-arm64"
+        Condition="Exists('$(_TrafficHelperRoot)win-arm64/AgentSpeedTrafficHelper.exe') and ('$(RuntimeIdentifier)' == '' or '$(RuntimeIdentifier)' == 'win-arm64')" />
+  </ItemGroup>
+
+  <Target Name="EmbedTrafficHelper" BeforeTargets="AssignTargetPaths" Condition="'@(TrafficHelperImage)' != ''">
+    <GetFileHash Files="@(TrafficHelperImage)" Algorithm="SHA256" HashEncoding="hex">
+      <Output TaskParameter="Items" ItemName="_TrafficHelperHashed" />
+    </GetFileHash>
+    <ItemGroup>
+      <_TrafficHelperHashed>
+        <Sha256>$([System.String]::Copy('%(FileHash)').ToLowerInvariant())</Sha256>
+        <HashFile>$(IntermediateOutputPath)traffic-helper/%(Rid).sha256</HashFile>
+      </_TrafficHelperHashed>
+    </ItemGroup>
+    <MakeDir Directories="$(IntermediateOutputPath)traffic-helper" />
+    <!-- Rewritten only when the hash changes, so an unchanged helper does not force a recompile. -->
+    <WriteLinesToFile File="%(_TrafficHelperHashed.HashFile)" Lines="%(_TrafficHelperHashed.Sha256)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+    <ItemGroup>
+      <EmbeddedResource Include="@(_TrafficHelperHashed)" LogicalName="AgentSpeed.TrafficHelper.%(_TrafficHelperHashed.Rid).exe" />
+      <EmbeddedResource Include="%(_TrafficHelperHashed.HashFile)" LogicalName="AgentSpeed.TrafficHelper.%(_TrafficHelperHashed.Rid).sha256" />
+      <FileWrites Include="%(_TrafficHelperHashed.HashFile)" />
+    </ItemGroup>
+    <Message Importance="high" Text="Embedding traffic helper %(_TrafficHelperHashed.Rid): %(_TrafficHelperHashed.Sha256)" />
+  </Target>
+</Project>

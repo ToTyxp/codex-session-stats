@@ -1,0 +1,507 @@
+{
+  "_comment": "macOS-only UI strings. Every key needs zh-Hant, zh-Hans, en and ja. Run macos/scripts/sync-strings.py after editing.",
+  "mac.launchAtLogin.requiresApproval": {
+    "zh-Hant": "請在「系統設定」›「一般」›「登入項目」中允許 Agent Speed。",
+    "zh-Hans": "请在“系统设置”›“通用”›“登录项”中允许 Agent Speed。",
+    "en": "Allow Agent Speed in System Settings › General › Login Items.",
+    "ja": "「システム設定」›「一般」›「ログイン項目」で Agent Speed を許可してください。"
+  },
+  "mac.launchAtLogin.openSettings": {
+    "zh-Hant": "打開系統設定",
+    "zh-Hans": "打开系统设置",
+    "en": "Open System Settings",
+    "ja": "システム設定を開く"
+  },
+  "mac.launchAtLogin.failed": {
+    "zh-Hant": "無法變更登入項目。",
+    "zh-Hans": "无法更改登录项。",
+    "en": "Couldn't change the login item.",
+    "ja": "ログイン項目を変更できませんでした。"
+  },
+  "mac.launchAtLogin.unavailable": {
+    "zh-Hant": "將 Agent Speed 移到「應用程式」資料夾後即可使用。",
+    "zh-Hans": "将 Agent Speed 移到“应用程序”文件夹后即可使用。",
+    "en": "Available once Agent Speed is in the Applications folder.",
+    "ja": "Agent Speed を「アプリケーション」フォルダに移動すると使用できます。"
+  },
+  "mac.settings.orb.clickThroughHint": {
+    "zh-Hant": "開啟後懸浮窗不會攔截滑鼠，請從選單列控制。",
+    "zh-Hans": "开启后悬浮窗不会拦截鼠标，请从菜单栏控制。",
+    "en": "The orb ignores the mouse. Control it from the menu bar.",
+    "ja": "オーブはマウス操作を受け付けません。メニューバーから操作してください。"
+  },
+  "mac.settings.orb.resetPosition": {
+    "zh-Hant": "重設位置",
+    "zh-Hans": "重置位置",
+    "en": "Reset Position",
+    "ja": "位置をリセット"
+  },
+  "mac.settings.orb.sizeValue": {
+    "zh-Hant": "%d pt",
+    "zh-Hans": "%d pt",
+    "en": "%d pt",
+    "ja": "%d pt"
+  },
+  "mac.settings.percentValue": {
+    "zh-Hant": "%d%%",
+    "zh-Hans": "%d%%",
+    "en": "%d%%",
+    "ja": "%d%%"
+  },
+  "mac.settings.speedValue": {
+    "zh-Hant": "%@ tok/s",
+    "zh-Hans": "%@ tok/s",
+    "en": "%@ tok/s",
+    "ja": "%@ tok/s"
+  },
+  "mac.settings.sources.default": {
+    "zh-Hant": "預設位置",
+    "zh-Hans": "默认位置",
+    "en": "Default location",
+    "ja": "デフォルトの場所"
+  },
+  "mac.settings.sources.custom": {
+    "zh-Hant": "自訂位置",
+    "zh-Hans": "自定位置",
+    "en": "Custom location",
+    "ja": "カスタムの場所"
+  },
+  "mac.settings.sources.chooseCodex": {
+    "zh-Hant": "選擇 Codex 的 sessions 資料夾",
+    "zh-Hans": "选择 Codex 的 sessions 文件夹",
+    "en": "Choose the Codex sessions folder",
+    "ja": "Codex の sessions フォルダを選択"
+  },
+  "mac.settings.sources.chooseClaude": {
+    "zh-Hant": "選擇 Claude 的 projects 資料夾",
+    "zh-Hans": "选择 Claude 的 projects 文件夹",
+    "en": "Choose the Claude projects folder",
+    "ja": "Claude の projects フォルダを選択"
+  },
+  "mac.settings.sources.chooseDsh": {
+    "zh-Hant": "選擇 DeepSeek Harness 的 sessions 資料夾",
+    "zh-Hans": "选择 DeepSeek Harness 的 sessions 文件夹",
+    "en": "Choose the DeepSeek Harness sessions folder",
+    "ja": "DeepSeek Harness の sessions フォルダを選択"
+  },
+  "mac.settings.sources.choosePrompt": {
+    "zh-Hant": "選擇",
+    "zh-Hans": "选择",
+    "en": "Choose",
+    "ja": "選択"
+  },
+  "mac.settings.sources.reveal": {
+    "zh-Hant": "在 Finder 中顯示",
+    "zh-Hans": "在访达中显示",
+    "en": "Show in Finder",
+    "ja": "Finder に表示"
+  },
+  "mac.settings.sources.checking": {
+    "zh-Hant": "正在讀取…",
+    "zh-Hans": "正在读取…",
+    "en": "Reading…",
+    "ja": "読み込み中…"
+  },
+  "mac.settings.about.license": {
+    "zh-Hant": "以 MIT 授權開放原始碼",
+    "zh-Hans": "以 MIT 许可证开源",
+    "en": "Open source under the MIT License",
+    "ja": "MIT ライセンスのオープンソース"
+  },
+  "mac.settings.about.tagline": {
+    "zh-Hant": "本機 AI agent 的即時 token 速度。",
+    "zh-Hans": "本机 AI agent 的实时 token 速度。",
+    "en": "Live token speed of your local AI agents.",
+    "ja": "ローカル AI エージェントのリアルタイム token 速度。"
+  },
+  "mac.dashboard.range": {
+    "zh-Hant": "時間範圍",
+    "zh-Hans": "时间范围",
+    "en": "Time range",
+    "ja": "表示期間"
+  },
+  "mac.dashboard.range.1m": {
+    "zh-Hant": "1 分",
+    "zh-Hans": "1 分",
+    "en": "1m",
+    "ja": "1分"
+  },
+  "mac.dashboard.range.2m": {
+    "zh-Hant": "2 分",
+    "zh-Hans": "2 分",
+    "en": "2m",
+    "ja": "2分"
+  },
+  "mac.dashboard.range.5m": {
+    "zh-Hant": "5 分",
+    "zh-Hans": "5 分",
+    "en": "5m",
+    "ja": "5分"
+  },
+  "mac.dashboard.peakLine": {
+    "zh-Hant": "峰值 %@",
+    "zh-Hans": "峰值 %@",
+    "en": "Peak %@",
+    "ja": "ピーク %@"
+  },
+  "mac.dashboard.openSettings": {
+    "zh-Hant": "前往設定",
+    "zh-Hans": "前往设置",
+    "en": "Open Settings",
+    "ja": "設定を開く"
+  },
+  "mac.dashboard.info": {
+    "zh-Hant": "如何測量",
+    "zh-Hans": "如何测量",
+    "en": "How it's measured",
+    "ja": "計測方法"
+  },
+  "mac.dashboard.chart": {
+    "zh-Hant": "即時速度圖表",
+    "zh-Hans": "实时速度图表",
+    "en": "Live speed chart",
+    "ja": "リアルタイム速度グラフ"
+  },
+  "mac.dashboard.now": {
+    "zh-Hant": "現在",
+    "zh-Hans": "现在",
+    "en": "Now",
+    "ja": "現在"
+  },
+  "mac.dashboard.preview": {
+    "zh-Hant": "特效預覽中，顯示的是示範資料",
+    "zh-Hans": "特效预览中，显示的是示范数据",
+    "en": "Previewing effects with sample data",
+    "ja": "エフェクトをサンプルデータでプレビュー中"
+  },
+  "mac.dashboard.stopPreview": {
+    "zh-Hant": "停止",
+    "zh-Hans": "停止",
+    "en": "Stop",
+    "ja": "停止"
+  },
+  "mac.a11y.statusItem": {
+    "zh-Hant": "Agent Speed，每秒 %@ 個 token，%@",
+    "zh-Hans": "Agent Speed，每秒 %@ 个 token，%@",
+    "en": "Agent Speed, %@ tokens per second, %@",
+    "ja": "Agent Speed、毎秒 %@ token、%@"
+  },
+  "mac.a11y.orbHint": {
+    "zh-Hant": "拖曳即可移動，按兩下打開面板",
+    "zh-Hans": "拖动即可移动，双击打开面板",
+    "en": "Drag to move. Double-click to open the dashboard.",
+    "ja": "ドラッグで移動、ダブルクリックでパネルを開きます"
+  },
+  "mac.settings.language.systemValue": {
+    "zh-Hant": "跟隨系統（%@）",
+    "zh-Hans": "跟随系统（%@）",
+    "en": "System (%@)",
+    "ja": "システムに合わせる（%@）"
+  },
+  "mac.settings.orb.presets": {
+    "zh-Hant": "常用大小",
+    "zh-Hans": "常用大小",
+    "en": "Presets",
+    "ja": "プリセット"
+  },
+  "mac.settings.effects.previewHint": {
+    "zh-Hant": "用 20 秒依序展示每個速度階段。",
+    "zh-Hans": "用 20 秒依次展示每个速度阶段。",
+    "en": "A 20-second sweep through every speed tier.",
+    "ja": "20 秒間ですべての速度段階を順に表示します。"
+  },
+  "mac.settings.sources.folder": {
+    "zh-Hant": "資料夾",
+    "zh-Hans": "文件夹",
+    "en": "Folder",
+    "ja": "フォルダ"
+  },
+  "mac.settings.about.copyright": {
+    "zh-Hant": "© 2026 zoefix",
+    "zh-Hans": "© 2026 zoefix",
+    "en": "© 2026 zoefix",
+    "ja": "© 2026 zoefix"
+  },
+  "mac.dashboard.chart.summary": {
+    "zh-Hant": "最高 %@ tok/s，現在 %@ tok/s",
+    "zh-Hans": "最高 %@ tok/s，现在 %@ tok/s",
+    "en": "High %@ tok/s, now %@ tok/s",
+    "ja": "最高 %@ tok/s、現在 %@ tok/s"
+  },
+  "mac.dashboard.chart.timeAxis": {
+    "zh-Hant": "時間",
+    "zh-Hans": "时间",
+    "en": "Time",
+    "ja": "時間"
+  },
+  "mac.update.windowTitle": {
+    "zh-Hant": "軟體更新",
+    "zh-Hans": "软件更新",
+    "en": "Software Update",
+    "ja": "ソフトウェア・アップデート"
+  },
+  "mac.update.checkMenu": {
+    "zh-Hant": "檢查更新…",
+    "zh-Hans": "检查更新…",
+    "en": "Check for Updates…",
+    "ja": "アップデートを確認…"
+  },
+  "mac.update.ok": {
+    "zh-Hant": "好",
+    "zh-Hans": "好",
+    "en": "OK",
+    "ja": "OK"
+  },
+  "mac.update.dismiss": {
+    "zh-Hant": "關閉",
+    "zh-Hans": "关闭",
+    "en": "Dismiss",
+    "ja": "閉じる"
+  },
+  "mac.update.failed.rateLimited": {
+    "zh-Hant": "GitHub 暫時限制了請求次數，請稍後再試",
+    "zh-Hans": "GitHub 暂时限制了请求次数，请稍后再试",
+    "en": "GitHub is limiting requests right now. Try again later",
+    "ja": "GitHub がリクエストを制限しています。しばらくしてから再試行してください"
+  },
+  "mac.update.failed.feed": {
+    "zh-Hant": "GitHub 傳回了無法辨識的資料",
+    "zh-Hans": "GitHub 返回了无法识别的数据",
+    "en": "GitHub sent a response Agent Speed couldn't read",
+    "ja": "GitHub から読み取れない応答が返されました"
+  },
+  "mac.update.failed.install": {
+    "zh-Hant": "無法替換 App，已保留目前的版本",
+    "zh-Hans": "无法替换 App，已保留当前版本",
+    "en": "The app couldn't be replaced, so the current version was kept",
+    "ja": "アプリを置き換えられなかったため、現在のバージョンを維持しました"
+  },
+  "mac.update.failed.unbundled": {
+    "zh-Hant": "這份 Agent Speed 無法自行更新，請從 GitHub 下載新版本",
+    "zh-Hans": "这份 Agent Speed 无法自行更新，请从 GitHub 下载新版本",
+    "en": "This copy of Agent Speed can't update itself. Download the new version from GitHub",
+    "ja": "この Agent Speed は自動で更新できません。GitHub から新しいバージョンをダウンロードしてください"
+  },
+  "mac.dashboard.sourceHint": {
+    "zh-Hant": "顯示用量歷史",
+    "zh-Hans": "显示用量历史",
+    "en": "Show usage history",
+    "ja": "使用履歴を表示"
+  },
+  "mac.dashboard.history": {
+    "zh-Hant": "歷史",
+    "zh-Hans": "历史",
+    "en": "History",
+    "ja": "履歴"
+  },
+  "mac.dashboard.historyHint": {
+    "zh-Hant": "顯示所有來源的用量歷史",
+    "zh-Hans": "显示所有来源的用量历史",
+    "en": "Show usage history for all sources",
+    "ja": "すべてのソースの使用履歴を表示"
+  },
+  "mac.settings.sources.chooseOpencode": {
+    "zh-Hant": "選擇內含 opencode.db 的 OpenCode 資料夾",
+    "zh-Hans": "选择包含 opencode.db 的 OpenCode 文件夹",
+    "en": "Choose the OpenCode folder that contains opencode.db",
+    "ja": "opencode.db を含む OpenCode のフォルダを選択"
+  },
+  "mac.settings.sources.chooseGemini": {
+    "zh-Hant": "選擇 Gemini CLI 的 tmp 資料夾",
+    "zh-Hans": "选择 Gemini CLI 的 tmp 文件夹",
+    "en": "Choose the Gemini CLI tmp folder",
+    "ja": "Gemini CLI の tmp フォルダを選択"
+  },
+  "mac.settings.sources.chooseOmp": {
+    "zh-Hant": "選擇 omp 的 sessions 資料夾",
+    "zh-Hans": "选择 omp 的 sessions 文件夹",
+    "en": "Choose the omp sessions folder",
+    "ja": "omp の sessions フォルダを選択"
+  },
+  "mac.settings.sources.chooseAntigravity": {
+    "zh-Hant": "選擇內含 conversations 的 Antigravity 資料夾",
+    "zh-Hans": "选择包含 conversations 的 Antigravity 文件夹",
+    "en": "Choose the Antigravity folder that contains conversations",
+    "ja": "conversations を含む Antigravity のフォルダを選択"
+  },
+  "mac.settings.sources.chooseWorkbuddy": {
+    "zh-Hant": "選擇 WorkBuddy 的資料夾（或其中的 projects 資料夾）",
+    "zh-Hans": "选择 WorkBuddy 的文件夹（或其中的 projects 文件夹）",
+    "en": "Choose the WorkBuddy folder (or its projects folder)",
+    "ja": "WorkBuddy のフォルダ（またはその中の projects フォルダ）を選択"
+  },
+  "mac.settings.sources.chooseWorkbuddyAi": {
+    "zh-Hant": "選擇 WorkBuddy AI 的資料夾（或其中的 projects 資料夾）",
+    "zh-Hans": "选择 WorkBuddy AI 的文件夹（或其中的 projects 文件夹）",
+    "en": "Choose the WorkBuddy AI folder (or its projects folder)",
+    "ja": "WorkBuddy AI のフォルダ（またはその中の projects フォルダ）を選択"
+  },
+  "mac.history.days": {
+    "zh-Hant": "%d 天",
+    "zh-Hans": "%d 天",
+    "en": "%d days",
+    "ja": "%d 日間"
+  },
+  "mac.history.days.one": {
+    "zh-Hant": "%d 天",
+    "zh-Hans": "%d 天",
+    "en": "%d day",
+    "ja": "%d 日間"
+  },
+  "mac.history.models.more": {
+    "zh-Hant": "+%d",
+    "zh-Hans": "+%d",
+    "en": "+%d",
+    "ja": "+%d"
+  },
+  "mac.history.a11y.item": {
+    "zh-Hant": "%@：%@",
+    "zh-Hans": "%@：%@",
+    "en": "%@: %@",
+    "ja": "%@：%@"
+  },
+  "mac.history.a11y.join": {
+    "zh-Hant": "，",
+    "zh-Hans": "，",
+    "en": ", ",
+    "ja": "、"
+  },
+  "mac.history.clear.title": {
+    "zh-Hant": "清除歷史統計",
+    "zh-Hans": "清除历史统计",
+    "en": "Clear History",
+    "ja": "履歴をクリア"
+  },
+  "mac.history.failed": {
+    "zh-Hant": "無法分析歷史紀錄。",
+    "zh-Hans": "无法分析历史记录。",
+    "en": "History could not be analyzed.",
+    "ja": "履歴を分析できませんでした。"
+  },
+  "mac.history.refresh": {
+    "zh-Hant": "立即更新",
+    "zh-Hans": "立即更新",
+    "en": "Refresh Now",
+    "ja": "今すぐ更新"
+  },
+  "mac.history.export.failed": {
+    "zh-Hant": "無法儲存這個檔案。",
+    "zh-Hans": "无法存储这个文件。",
+    "en": "The file could not be saved.",
+    "ja": "ファイルを保存できませんでした。"
+  },
+  "mac.history.copy": {
+    "zh-Hant": "拷貝",
+    "zh-Hans": "拷贝",
+    "en": "Copy",
+    "ja": "コピー"
+  },
+  "mac.history.table": {
+    "zh-Hant": "每日明細",
+    "zh-Hans": "每日明细",
+    "en": "Daily breakdown",
+    "ja": "日別の内訳"
+  },
+  "mac.history.range": {
+    "zh-Hant": "日期範圍",
+    "zh-Hans": "日期范围",
+    "en": "Date range",
+    "ja": "期間"
+  },
+  "mac.history.sorted.asc": {
+    "zh-Hant": "遞增排序",
+    "zh-Hans": "升序排列",
+    "en": "Sorted ascending",
+    "ja": "昇順"
+  },
+  "mac.history.sorted.desc": {
+    "zh-Hant": "遞減排序",
+    "zh-Hans": "降序排列",
+    "en": "Sorted descending",
+    "ja": "降順"
+  },
+  "mac.history.range.7d.short": {
+    "zh-Hant": "7 天",
+    "zh-Hans": "7 天",
+    "en": "7D",
+    "ja": "7日"
+  },
+  "mac.history.range.30d.short": {
+    "zh-Hant": "30 天",
+    "zh-Hans": "30 天",
+    "en": "30D",
+    "ja": "30日"
+  },
+  "mac.history.range.90d.short": {
+    "zh-Hant": "90 天",
+    "zh-Hans": "90 天",
+    "en": "90D",
+    "ja": "90日"
+  },
+  "mac.history.range.year.short": {
+    "zh-Hant": "今年",
+    "zh-Hans": "今年",
+    "en": "YTD",
+    "ja": "今年"
+  },
+  "mac.history.breakdown.share": {
+    "zh-Hant": "佔比",
+    "zh-Hans": "占比",
+    "en": "Share",
+    "ja": "割合"
+  },
+  "mac.history.breakdown.otherModels": {
+    "zh-Hant": "其他模型",
+    "zh-Hans": "其他模型",
+    "en": "Other models",
+    "ja": "その他のモデル"
+  },
+  "mac.history.breakdown.sourceHint": {
+    "zh-Hant": "查看這個來源的模型分布",
+    "zh-Hans": "查看这个来源的模型分布",
+    "en": "Show this source by model",
+    "ja": "このソースをモデル別に表示"
+  },
+  "mac.history.chart.hint": {
+    "zh-Hant": "用左右方向鍵逐日查看；按一下長條或按 Return 可在表格中顯示該日。",
+    "zh-Hans": "用左右方向键逐日查看；点按条形或按 Return 可在表格中显示该日。",
+    "en": "Use the left and right arrow keys to move between days. Click a bar or press Return to show the day in the table.",
+    "ja": "左右の矢印キーで日を移動し、バーのクリックか Return で表の該当日を表示します。"
+  },
+  "mac.titles.preview.dashboard": {
+    "zh-Hant": "面板",
+    "zh-Hans": "面板",
+    "en": "Dashboard",
+    "ja": "ダッシュボード"
+  },
+  "mac.settings.tab.orb": {
+    "zh-Hant": "懸浮窗",
+    "zh-Hans": "悬浮窗",
+    "en": "Orbs",
+    "ja": "オーブ"
+  },
+  "mac.settings.tab.traffic": {
+    "zh-Hant": "網路流量",
+    "zh-Hans": "网络流量",
+    "en": "Traffic",
+    "ja": "通信量"
+  },
+  "mac.settings.sources.chooseZcode": {
+    "zh-Hant": "選擇 ZCode 資料夾",
+    "zh-Hans": "选择 ZCode 文件夹",
+    "en": "Choose ZCode Folder",
+    "ja": "ZCode フォルダを選択"
+  },
+  "mac.settings.sources.chooseKimi": {
+    "zh-Hant": "選擇 Kimi Code CLI 資料夾",
+    "zh-Hans": "选择 Kimi Code CLI 文件夹",
+    "en": "Choose Kimi Code CLI Folder",
+    "ja": "Kimi Code CLI フォルダを選択"
+  },
+  "mac.settings.sources.chooseGrokBuild": {
+    "zh-Hant": "選擇 Grok Build 資料夾",
+    "zh-Hans": "选择 Grok Build 文件夹",
+    "en": "Choose Grok Build Folder",
+    "ja": "Grok Build フォルダを選択"
+  }
+}

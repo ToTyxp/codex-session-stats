@@ -1,0 +1,68 @@
+<Window x:Class="AgentSpeed.Reporting.ReportProfileWindow" x:ClassModifier="internal"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:AgentSpeed.Localization"
+        Width="540" Height="570" MinWidth="420" MinHeight="360" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner" UseLayoutRounding="True"
+        Title="{loc:Loc profile.deviceManagement}" FontFamily="{DynamicResource AppFontFamily}"
+        Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="Visible" />
+        <Style x:Key="GroupCard" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+        </Style>
+        <Style x:Key="Footnote" TargetType="TextBlock" BasedOn="{StaticResource CaptionText}">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="LineHeight" Value="17" />
+        </Style>
+    </Window.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="24,20,24,24">
+            <DockPanel Margin="0,0,0,18">
+                <Button DockPanel.Dock="Right" Content="{loc:Loc profile.refresh}" Command="{Binding RefreshCommand}" />
+                <TextBlock Text="{loc:Loc profile.deviceManagement}" Style="{StaticResource SubtitleText}" FontSize="22" VerticalAlignment="Center" />
+            </DockPanel>
+            <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+                       AutomationProperties.LiveSetting="Polite" Margin="0,0,0,10" />
+            <Border Style="{StaticResource GroupCard}" Padding="18" Margin="0,12,0,0">
+                <StackPanel>
+                    <TextBlock Text="{Binding IdentityText}" FontWeight="SemiBold" FontSize="15" />
+                    <WrapPanel Margin="0,12,0,0">
+                        <Button x:Name="CreateIdentityButton" Content="{loc:Loc profile.identity.create}" Command="{Binding CreateIdentityCommand}" Margin="0,0,8,6" />
+                        <Button x:Name="UnlinkButton" Content="{loc:Loc profile.identity.unlink}" Command="{Binding UnlinkCommand}" Margin="0,0,0,6" />
+                    </WrapPanel>
+                    <TextBlock Text="{loc:Loc profile.identity.unlinkNote}" Style="{StaticResource Footnote}" TextWrapping="Wrap" Margin="0,4,0,12" />
+                    <TextBlock Text="{loc:Loc profile.devices}" FontWeight="SemiBold" Margin="0,16,0,6" />
+                    <ItemsControl ItemsSource="{Binding Devices}">
+                        <ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding}" FontSize="12" Margin="0,3" Foreground="{DynamicResource TextFillColorSecondaryBrush}" /></DataTemplate></ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource GroupCard}" Padding="18" Margin="0,12,0,0">
+                <StackPanel>
+                    <TextBlock Text="{loc:Loc profile.pairing.code}" FontWeight="SemiBold" FontSize="15" />
+                    <TextBlock Text="{loc:Loc profile.pairing.note}" Style="{StaticResource Footnote}" TextWrapping="Wrap" Margin="0,6,0,12" />
+                    <Button x:Name="InviteButton" Content="{loc:Loc profile.pairing.invite}" Command="{Binding InviteCommand}" HorizontalAlignment="Left" Margin="0,0,0,10" />
+                    <DockPanel>
+                        <Button x:Name="JoinButton" DockPanel.Dock="Right" Content="{loc:Loc profile.pairing.join}" Command="{Binding JoinCommand}" Margin="8,0,0,0" />
+                        <TextBox x:Name="PairingCodeBox" Text="{Binding CodeInput, UpdateSourceTrigger=PropertyChanged}" MaxLength="32" FontFamily="Consolas" AutomationProperties.Name="{loc:Loc profile.pairing.code}" />
+                    </DockPanel>
+                    <StackPanel Margin="0,12,0,0" Visibility="{Binding HasPairing, Converter={StaticResource Visible}}">
+                        <TextBox x:Name="InviteCodeBox" Text="{Binding InviteCode, Mode=OneWay}" Style="{StaticResource SelectableText}" FontSize="22" FontFamily="Consolas" FontWeight="SemiBold" AutomationProperties.Name="{loc:Loc profile.pairing.code}" />
+                        <TextBlock Text="{Binding PairingStatus}" TextWrapping="Wrap" Margin="0,6,0,0" AutomationProperties.LiveSetting="Polite" />
+                        <TextBlock Text="{Binding Claimant}" FontFamily="Consolas" FontSize="12" Margin="0,6,0,0" />
+                        <WrapPanel Margin="0,10,0,0">
+                            <Button x:Name="ApproveButton" Content="{loc:Loc profile.pairing.approve}" Command="{Binding ApproveCommand}" Margin="0,0,8,6" />
+                            <Button x:Name="CheckPairingButton" Content="{loc:Loc profile.pairing.check}" Command="{Binding CheckCommand}" Margin="0,0,8,6" />
+                            <Button x:Name="CancelPairingButton" Content="{loc:Loc profile.pairing.cancel}" Command="{Binding CancelCommand}" Margin="0,0,0,6" />
+                        </WrapPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

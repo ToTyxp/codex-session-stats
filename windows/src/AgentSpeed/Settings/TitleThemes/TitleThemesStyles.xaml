@@ -1,0 +1,276 @@
+<!-- Title themes in Settings → General (DESIGN 5): theme cards, the New card, the editor's compact title fields and
+     its preview cards. Fluent brushes only; motion 0.2 s ease-out for color and opacity. -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:tt="clr-namespace:AgentSpeed.Settings.TitleThemes">
+
+    <!-- The Fluent card every group of the General page sits in. -->
+    <Style x:Key="TitleGroup" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+    </Style>
+
+    <!-- Keyboard focus ring outside a card. -->
+    <Style x:Key="TitleCardFocusVisual">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border Margin="-3" CornerRadius="11" BorderThickness="2" SnapsToDevicePixels="True"
+                            BorderBrush="{DynamicResource KeyboardFocusBorderColorBrush}" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- The ⋯ button of a custom card. -->
+    <Style x:Key="TitleCardMoreButton" TargetType="Button" BasedOn="{StaticResource SubtleButton}">
+        <Setter Property="Width" Value="24" />
+        <Setter Property="Height" Value="20" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+    </Style>
+
+    <!-- A theme card: name over the preview strip; the selected card has an accent ring, a faint accent fill and a check
+         badge; hover lightens the fill. -->
+    <Style x:Key="TitleCard" TargetType="tt:TitleThemeCard">
+        <Setter Property="Height" Value="64" />
+        <Setter Property="Margin" Value="0,0,8,8" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource TitleCardFocusVisual}" />
+        <Setter Property="ToolTipService.InitialShowDelay" Value="600" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="tt:TitleThemeCard">
+                    <Grid Background="Transparent">
+                        <Border x:Name="Fill" CornerRadius="8" Background="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                        <Border x:Name="Hover" CornerRadius="8" Background="{DynamicResource SubtleFillColorSecondaryBrush}" Opacity="0" />
+                        <Border x:Name="Tint" CornerRadius="8" Background="{DynamicResource AccentFillColorDefaultBrush}" Opacity="0" />
+                        <Border x:Name="Ring" CornerRadius="8" BorderThickness="2" BorderBrush="{DynamicResource AccentFillColorDefaultBrush}"
+                                Visibility="Collapsed" />
+                        <StackPanel Margin="12,0,12,0" VerticalAlignment="Center">
+                            <TextBlock x:Name="NameText" Text="{Binding Name}" FontSize="13" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
+                                       Foreground="{TemplateBinding Foreground}" />
+                            <tt:TitleStripText Margin="0,5,0,0" FontSize="11" Titles="{Binding StripTitles}" Brushes="{Binding StripBrushes}"
+                                               SeparatorBrush="{DynamicResource TextFillColorTertiaryBrush}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,7,8,0">
+                            <Button x:Name="More" Style="{StaticResource TitleCardMoreButton}" Opacity="0" Visibility="Collapsed" Margin="0,0,4,0"
+                                    Tag="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                                    ToolTip="{Binding MoreText, RelativeSource={RelativeSource TemplatedParent}}"
+                                    AutomationProperties.Name="{Binding MoreText, RelativeSource={RelativeSource TemplatedParent}}">
+                                <TextBlock Style="{StaticResource SymbolIcon}" FontSize="12" Text="&#xE712;"
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            </Button>
+                            <Grid x:Name="Check" Width="16" Height="16" Margin="0,2,0,0" Visibility="Collapsed" VerticalAlignment="Top">
+                                <Ellipse Fill="{DynamicResource AccentFillColorDefaultBrush}" />
+                                <TextBlock Style="{StaticResource SymbolIcon}" FontSize="9" FontWeight="Bold" Text="&#xE73E;"
+                                           Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Hover" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Hover" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsCustom" Value="True">
+                            <Setter TargetName="More" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="ShowsMore" Value="True">
+                            <Setter TargetName="NameText" Property="Margin" Value="0,0,30,0" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="More" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="More" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Ring" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="Tint" Property="Opacity" Value="0.1" />
+                            <Setter TargetName="Check" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="True" />
+                                <Condition Property="ShowsMore" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="NameText" Property="Margin" Value="0,0,22,0" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="True" />
+                                <Condition Property="ShowsMore" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="NameText" Property="Margin" Value="0,0,50,0" />
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- The last, dashed card: + titles.custom.new in accent; disabled at eight custom sets. -->
+    <Style x:Key="TitleNewCard" TargetType="Button">
+        <Setter Property="Height" Value="64" />
+        <Setter Property="Margin" Value="0,0,8,8" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource TitleCardFocusVisual}" />
+        <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid Background="Transparent">
+                        <Border x:Name="Hover" CornerRadius="8" Background="{DynamicResource SubtleFillColorSecondaryBrush}" Opacity="0" />
+                        <Rectangle x:Name="Dash" RadiusX="8" RadiusY="8" StrokeThickness="1" StrokeDashArray="4 3" SnapsToDevicePixels="True"
+                                   Stroke="{DynamicResource TextFillColorTertiaryBrush}" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="12,0,12,0">
+                            <TextBlock Style="{StaticResource SymbolIcon}" FontSize="12" Text="&#xE710;" Margin="0,1,8,0"
+                                       Foreground="{TemplateBinding Foreground}" />
+                            <TextBlock Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" FontSize="13" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
+                                       Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Dash" Property="Stroke" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Hover" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Hover" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Hover" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                            <Setter TargetName="Dash" Property="Stroke" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                            <Setter Property="Cursor" Value="Arrow" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- A compact title field (26 DIP, so a row stays 30 DIP tall) drawn like a Fluent text box: control fill, subtle
+         stroke, and the accent underline while it has the focus. -->
+    <Style x:Key="TitleFieldBox" TargetType="TextBox">
+        <Setter Property="Height" Value="26" />
+        <Setter Property="FontSize" Value="13" />
+        <!-- The text host of this template sets text about 8.5 DIP in from its margin, so a 3 DIP padding puts the text where
+             the placeholder sits (12 DIP), like the Fluent text boxes around it. -->
+        <Setter Property="Padding" Value="3,0,9,0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="AllowDrop" Value="True" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Grid>
+                        <Border x:Name="Chrome" CornerRadius="4" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True" />
+                        <Border x:Name="Underline" CornerRadius="0,0,4,4" BorderThickness="0,0,0,2" Visibility="Collapsed" SnapsToDevicePixels="True"
+                                BorderBrush="{DynamicResource AccentFillColorDefaultBrush}" />
+                        <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" Focusable="False" VerticalAlignment="Center"
+                                      HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Underline" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- The ↺ reset button of a row: fades in when the field has text. -->
+    <Style x:Key="TitleResetButton" TargetType="Button" BasedOn="{StaticResource SubtleButton}">
+        <Setter Property="Width" Value="26" />
+        <Setter Property="Height" Value="26" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+    </Style>
+
+    <!-- A preview card: the live orb over its caption, on a fill one step above the group. -->
+    <Style x:Key="TitlePreviewCard" TargetType="tt:TitlePreviewImage">
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+    </Style>
+</ResourceDictionary>

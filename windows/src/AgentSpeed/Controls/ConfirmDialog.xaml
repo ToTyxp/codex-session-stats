@@ -1,0 +1,80 @@
+<Window x:Class="AgentSpeed.Controls.ConfirmDialog"
+        x:ClassModifier="internal"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Width="440"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        UseLayoutRounding="True"
+        FontFamily="{DynamicResource AppFontFamily}"
+        Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+    <Window.Resources>
+        <!-- Destructive action: critical fill with on-accent text (white in light, black in dark), so it reads as a
+             deliberate choice next to the default Cancel button. -->
+        <Style x:Key="DestructiveButton" TargetType="Button">
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Padding" Value="12,0" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border x:Name="Chip" CornerRadius="4" Background="{TemplateBinding Background}" />
+                            <Border x:Name="Focus" CornerRadius="6" BorderThickness="2" Margin="-3" Visibility="Collapsed"
+                                    BorderBrush="{DynamicResource KeyboardFocusBorderColorBrush}" />
+                            <ContentPresenter Margin="{TemplateBinding Padding}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              TextElement.Foreground="{TemplateBinding Foreground}" RecognizesAccessKey="True" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chip" Property="Opacity" Value="0.9" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Chip" Property="Opacity" Value="0.78" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Focus" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Margin="24,20,24,24">
+            <TextBlock x:Name="Heading" Style="{StaticResource SubtitleText}" TextWrapping="Wrap"
+                       AutomationProperties.HeadingLevel="Level1" />
+            <TextBlock x:Name="Body" Style="{StaticResource BodyText}" Margin="0,12,0,0" LineHeight="20" />
+        </StackPanel>
+
+        <!-- Command area, as in a WinUI content dialog: equal-width buttons, the safe choice on the right and default. -->
+        <Border Grid.Row="1" Padding="24" BorderThickness="0,1,0,0"
+                Background="{DynamicResource SubtleFillColorSecondaryBrush}"
+                BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Button x:Name="ConfirmButton" Grid.Column="0" Style="{StaticResource DestructiveButton}" HorizontalAlignment="Stretch"
+                        Click="OnConfirm" />
+                <Button x:Name="CancelButton" Grid.Column="2" Height="32" HorizontalAlignment="Stretch" FontSize="14"
+                        IsCancel="True" IsDefault="True" />
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
