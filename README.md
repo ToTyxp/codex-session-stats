@@ -69,7 +69,7 @@ bash codex/scripts/test.sh
 
 This runs the integration's Python and JavaScript tests plus targeted Swift parser, statistics, cache and file-reader regressions. It does not invoke model APIs or the unrelated upstream GUI/network-traffic suites.
 
-`codex/` contains the desktop bridge, display, installation tools and tests. `macos/Sources/AgentSpeedCodexMeter/` and `macos/Sources/AgentSpeedCore/CodexMeter/` contain the JSONL helper and session accounting. The rest of the inherited Agent Speed source is kept for provenance and shared core dependencies; its original application is documented in [README.upstream.md](README.upstream.md). Use the **Codex installation commands above**, not upstream `install.sh` or `install.ps1`.
+`codex/` contains the desktop bridge, display, installation tools and tests. `macos/Sources/AgentSpeedCodexMeter/` and `macos/Sources/AgentSpeedCore/CodexMeter/` contain the JSONL helper and session accounting. The shared Agent Speed core and its test fixtures are retained; the original application and its installers are available in the [upstream repository](https://github.com/zoefix/agent-speed).
 
 Chinese integration notes and the numeric event contract: [codex/README.md](codex/README.md).
 

@@ -6,7 +6,6 @@ export PYTHONDONTWRITEBYTECODE=1
 python3 -m unittest discover -s "${REPO_ROOT}/codex/tests" -p 'test_*.py' -q
 node --test "${REPO_ROOT}/codex/tests/test_speed_badge.mjs"
 
-export AGENT_SPEED_CODEX_METER_ONLY=1
 BUILD_DIR="${AGENT_SPEED_BUILD_DIR:-${REPO_ROOT}/macos/.build-codex}"
 export CLANG_MODULE_CACHE_PATH="${BUILD_DIR}/module-cache"
 export SWIFTPM_MODULECACHE_OVERRIDE="${BUILD_DIR}/module-cache"

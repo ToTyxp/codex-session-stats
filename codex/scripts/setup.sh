@@ -4,7 +4,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INTEGRATION_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 REPO_ROOT="$(cd "${INTEGRATION_ROOT}/.." && pwd)"
 BUILD_DIR="${AGENT_SPEED_BUILD_DIR:-${REPO_ROOT}/macos/.build-codex}"
-export AGENT_SPEED_CODEX_METER_ONLY=1
 export CLANG_MODULE_CACHE_PATH="${BUILD_DIR}/module-cache"
 export SWIFTPM_MODULECACHE_OVERRIDE="${BUILD_DIR}/module-cache"
 xcrun swift build --disable-sandbox --package-path "${REPO_ROOT}/macos" \
